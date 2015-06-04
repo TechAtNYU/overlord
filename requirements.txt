@@ -1,0 +1,3 @@
+circleclient
+celery
+spur
