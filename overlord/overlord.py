@@ -22,17 +22,17 @@ app.conf.update(
   CELERYBEAT_SCHEDULE = {
     'every-day-api': {
         'task': 'overlord.backupMongo',
-        'schedule': crontab(hour='0'),
+        'schedule': crontab(minute=0, hour=0),
         'args': (),
     },
     'every-day-wiki': {
         'task': 'overlord.backupMySQLWithHost',
-        'schedule': crontab(hour='1'),
+        'schedule': crontab(minute=0, hour=1),
         'args': (),
     },
     'every-hour-intranet': {
         'task': 'overlord.triggerBuild',
-        'schedule': crontab(minute=59),
+        'schedule': crontab(minute='*/45'),
         'args': ('intranet', 'master'),
     },
   }
