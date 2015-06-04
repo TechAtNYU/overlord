@@ -46,7 +46,12 @@ def backupMongo():
     password=os.environ['TNYU_API_SERVER_PASSWORD'],
   )
   with shell:
-    result = shell.run(["node", "index.js"], cwd="/backup", allow_error=True)
+    shell.run(["rm", "-rf", "dump"], cwd="/backup", allow_error=True)
+    shell.run(["mkdir", "dump"], cwd="/backup", allow_error=True)
+    shell.run(["mongodump", "-h", "localhost", "-o", "dump", "-d", "platform"], cwd="/backup", allow_error=True)
+    shell.run(["git", "add", "."], cwd="/backup", allow_error=True)
+    shell.run(["git", "commit", "-am", '"Adding Updates"'], cwd="/backup", allow_error=True)
+    result = shell.run(["git", "push", "-u", "origin", "master"], cwd="/backup", allow_error=True)
 
   print result.output
 
