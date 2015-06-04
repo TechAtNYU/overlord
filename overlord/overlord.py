@@ -1,9 +1,8 @@
-import os
-import shlex
+import os, spur
 from subprocess import call
 from celery import Celery
+from celery.schedules import crontab
 from circleclient import circleclient
-import spur
 
 app = Celery(
   'overlord',
@@ -20,6 +19,13 @@ app.conf.update(
   CELERY_RESULT_SERIALIZER='json',
   CELERY_ENABLE_UTC=True,
   CELERY_TIMEZONE='America/New_York',
+  CELERYBEAT_SCHEDULE = {
+    'every-day': {
+        'task': 'overlord.backupMongo',
+        'schedule': crontab(hour='0'),
+        'args': (),
+    },
+  }
 )
 
 @app.task
@@ -32,8 +38,7 @@ def triggerBuild(projectName, branchName):
 @app.task
 def backupMySQLWithHost():
   sqlFile = open('/root/backup/sql.sql', 'wb')
-  sqlCmd = "mysqldump wiki"
-  sqlResult = call(shlex.split(sqlCmd), universal_newlines=True, stdout=sqlFile)
+  sqlResult = call(["mysqldump", "wiki"], universal_newlines=True, stdout=sqlFile)
   if sqlResult == 0:
     return True
   return False
@@ -52,8 +57,9 @@ def backupMongo():
     shell.run(["git", "add", "."], cwd="/backup", allow_error=True)
     shell.run(["git", "commit", "-am", '"Adding Updates"'], cwd="/backup", allow_error=True)
     result = shell.run(["git", "push", "-u", "origin", "master"], cwd="/backup", allow_error=True)
-
-  print result.output
+  if result.return_code > 4:
+    return False
+  return True
 
 if __name__ == '__main__':
   app.start()

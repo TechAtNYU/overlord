@@ -1,2 +1,2 @@
 all:
-	celery -A overlord worker -l info
+	celery -A overlord worker --loglevel=info --beat
