@@ -20,10 +20,20 @@ app.conf.update(
   CELERY_ENABLE_UTC=True,
   CELERY_TIMEZONE='America/New_York',
   CELERYBEAT_SCHEDULE = {
-    'every-day': {
+    'every-day-api': {
         'task': 'overlord.backupMongo',
         'schedule': crontab(hour='0'),
         'args': (),
+    },
+    'every-day-wiki': {
+        'task': 'overlord.backupMySQLWithHost',
+        'schedule': crontab(hour='1'),
+        'args': (),
+    },
+    'every-hour-intranet': {
+        'task': 'overlord.triggerBuild',
+        'schedule': crontab(minute=59),
+        'args': ('intranet', 'master'),
     },
   }
 )
@@ -49,6 +59,7 @@ def backupMongo():
     hostname=os.environ['TNYU_API_SERVER_IP'],
     username=os.environ['TNYU_API_SERVER_USER'],
     password=os.environ['TNYU_API_SERVER_PASSWORD'],
+    missing_host_key=spur.ssh.MissingHostKey.accept
   )
   with shell:
     shell.run(["rm", "-rf", "dump"], cwd="/backup", allow_error=True)
