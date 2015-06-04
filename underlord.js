@@ -5,6 +5,7 @@ var client = celery.createClient({
 });
 var triggerBuild = client.createTask('overlord.triggerBuild');
 var backupMySQLWithHost = client.createTask('overlord.backupMySQLWithHost');
+var backupMongo = client.createTask('overlord.backupMongo');
 
 client.on('error', function(err) {
     console.log(err);
@@ -17,7 +18,7 @@ client.on('connect', function() {
       client.end();
       client.broker.destroy();
   });*/
-  var result = backupMySQLWithHost.call([]);
+  var result = backupMongo.call([]);
   result.on('ready', function(message) {
       console.log(message);
       client.end();

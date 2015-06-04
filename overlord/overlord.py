@@ -40,16 +40,15 @@ def backupMySQLWithHost():
 
 @app.task
 def backupMongo():
-  SSH_KEY_PATH = '/Users/abhiagarwal/.ssh/id_rsa'
   shell = spur.SshShell(
-    hostname="23.253.204.159",
-    username="ethan",
-    private_key_file=SSH_KEY_PATH
+    hostname=os.environ['TNYU_API_SERVER_IP'],
+    username=os.environ['TNYU_API_SERVER_USER'],
+    password=os.environ['TNYU_API_SERVER_PASSWORD'],
   )
   with shell:
-    result = shell.run(["cd", "/backup/"])
+    result = shell.run(["node", "index.js"], cwd="/backup", allow_error=True)
 
-  return result.output
+  print result.output
 
 if __name__ == '__main__':
   app.start()
