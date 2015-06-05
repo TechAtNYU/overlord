@@ -1,4 +1,14 @@
-Running overlord: `celery -A overlord worker -l info`
+Overlord now runs:
+
+- Database backup on:
+  - API server (MongoDB)
+  - Wiki server (MySQL)
+  - Business Development server (MySQL)
+
+Running overlord: 
+
+`celery -A overlord worker -l info`
+
 Running tasks: 
 
 ```python

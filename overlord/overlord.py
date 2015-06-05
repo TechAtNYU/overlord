@@ -33,7 +33,6 @@ def backupMySQLWithHost():
 
 @app.task
 def backupMySQLWithoutHost():
-  print 'x'
   shell = spur.SshShell(
     hostname=os.environ['TNYU_BD_SERVER_IP'],
     username=os.environ['TNYU_BD_SERVER_USER'],
