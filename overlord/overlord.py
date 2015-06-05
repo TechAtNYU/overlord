@@ -1,7 +1,6 @@
 import os, spur
 from subprocess import call
 from celery import Celery
-from celery.schedules import crontab
 from circleclient import circleclient
 
 app = Celery(
@@ -9,34 +8,10 @@ app = Celery(
   broker='amqp://guest:guest@localhost//',
   backend='amqp'
 )
+app.config_from_object('celeryconfig')
 
 token = os.environ['TNYU_CIRCLECI_API_TOKEN']
 client = circleclient.CircleClient(token)
-
-app.conf.update(
-  CELERY_TASK_SERIALIZER='json',
-  CELERY_ACCEPT_CONTENT=['json'],
-  CELERY_RESULT_SERIALIZER='json',
-  CELERY_ENABLE_UTC=True,
-  CELERY_TIMEZONE='America/New_York',
-  CELERYBEAT_SCHEDULE = {
-    'every-day-api': {
-        'task': 'overlord.backupMongo',
-        'schedule': crontab(minute=0, hour=0),
-        'args': (),
-    },
-    'every-day-wiki': {
-        'task': 'overlord.backupMySQLWithHost',
-        'schedule': crontab(minute=0, hour=1),
-        'args': (),
-    },
-    'every-hour-intranet': {
-        'task': 'overlord.triggerBuild',
-        'schedule': crontab(minute='*/45'),
-        'args': ('intranet', 'master'),
-    },
-  }
-)
 
 @app.task
 def triggerBuild(projectName, branchName):
@@ -50,6 +25,9 @@ def backupMySQLWithHost():
   sqlFile = open('/root/backup/sql.sql', 'wb')
   sqlResult = call(["mysqldump", "wiki"], universal_newlines=True, stdout=sqlFile)
   if sqlResult == 0:
+    call(["git", "add", "."], cwd="/root/backup/")
+    call(["git", "commit", "-am", '"Adding Updates"'], cwd="/root/backup/")
+    call(["git", "push", "-u", "origin", "master"], cwd="/root/backup/")
     return True
   return False
 
