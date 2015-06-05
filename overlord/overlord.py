@@ -32,6 +32,26 @@ def backupMySQLWithHost():
   return False
 
 @app.task
+def backupMySQLWithoutHost():
+  print 'x'
+  shell = spur.SshShell(
+    hostname=os.environ['TNYU_BD_SERVER_IP'],
+    username=os.environ['TNYU_BD_SERVER_USER'],
+    password=os.environ['TNYU_BD_SERVER_PASSWORD'],
+    missing_host_key=spur.ssh.MissingHostKey.accept
+  )
+  with shell:
+    sqlFile = open('/root/backups/sql.sql', 'wb')
+    passwordCombination = "-p" + os.environ['TNYU_BD_MYSQL_PASSWORD']
+    shell.run(["mysqldump", "zurmo", "-u", "zurmo", passwordCombination], cwd="/root/backups", allow_error=True, stdout=sqlFile)
+    shell.run(["git", "add", "."], cwd="/root/backups", allow_error=True)
+    shell.run(["git", "commit", "-am", '"Adding Updates"'], cwd="/root/backups", allow_error=True)
+    result = shell.run(["git", "push", "-u", "origin", "master"], cwd="/root/backups", allow_error=True)
+  if result.return_code > 4:
+    return False
+  return True
+
+@app.task
 def backupMongo():
   shell = spur.SshShell(
     hostname=os.environ['TNYU_API_SERVER_IP'],
