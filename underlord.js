@@ -7,6 +7,7 @@ var triggerBuild = client.createTask('overlord.triggerBuild');
 var backupMySQLWithHost = client.createTask('overlord.backupMySQLWithHost');
 var backupMongo = client.createTask('overlord.backupMongo');
 var backupMySQLWithoutHost = client.createTask('overlord.backupMySQLWithoutHost');
+var rebuildWikiPassword = client.createTask('overlord.rebuildWikiPassword');
 
 client.on('error', function(err) {
     console.log(err);
@@ -20,11 +21,12 @@ client.on('connect', function() {
       client.end();
       client.broker.destroy();
   });
-  var result = backupMongo.call([]);
+  */
+  var result = rebuildWikiPassword.call([]);
   result.on('ready', function(message) {
       console.log(message);
       client.end();
       client.broker.destroy();
   });
-  */
+  
 });
