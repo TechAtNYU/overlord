@@ -16,6 +16,11 @@ CELERYBEAT_SCHEDULE = {
       'schedule': crontab(minute=0, hour=1),
       'args': (),
   },
+  'every-day-bd': {
+      'task': 'overlord.backupMySQLWithoutHost',
+      'schedule': crontab(minute=0, hour=2),
+      'args': (),
+  },
   'every-hour-intranet': {
       'task': 'overlord.triggerBuild',
       'schedule': crontab(minute='*/45'),
