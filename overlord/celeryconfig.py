@@ -26,4 +26,14 @@ CELERYBEAT_SCHEDULE = {
       'schedule': crontab(minute='*/45'),
       'args': ('intranet', 'master'),
   },
+  'every-hour-startup-week': {
+      'task': 'overlord.triggerBuild',
+      'schedule': crontab(minute='*/45'),
+      'args': ('startup-week', 'master'),
+  },
+  'every-hour-ship': {
+      'task': 'overlord.triggerBuild',
+      'schedule': crontab(minute='*/45'),
+      'args': ('ship', 'master'),
+  },
 }
