@@ -21,6 +21,11 @@ CELERYBEAT_SCHEDULE = {
       'schedule': crontab(minute=30, hour=0),
       'args': (),
   },
+  'every-day-slack': {
+      'task': 'static.triggerBuild',
+      'schedule': crontab(minute=0, hour=1),
+      'args': ('slack-dump', 'master'),
+  },
   'every-hour-intranet': {
       'task': 'static.triggerBuild',
       'schedule': crontab(minute='*/45'),

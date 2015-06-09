@@ -51,3 +51,23 @@ def monitorServices():
       return False
     return True
   return True
+
+def monitorAPIv2():
+  result = checkUptime(os.environ['TNYU_Services_SERVER_Address'])
+  if not result:
+    # if services is down we have to restart it
+    shell = spur.SshShell(
+      hostname=os.environ['TNYU_Services_SERVER_IP'],
+      username=os.environ['TNYU_Services_SERVER_USER'],
+      password=os.environ['TNYU_Services_SERVER_PASSWORD'],
+      missing_host_key=spur.ssh.MissingHostKey.accept
+    )
+    with shell:
+      shell.run(["forever", "stopall"], cwd="/root", allow_error=True)
+      shell.run(["forever", "start", "index.js"], cwd="/root/services", allow_error=True)
+      shell.run(["forever", "start", "calendar.js"], cwd="/root/calendar-server", allow_error=True)
+      result = shell.run(["forever", "start", "index.js"], cwd="/root/proxy", allow_error=True)
+    if result.return_code > 4:
+      return False
+    return True
+  return True
