@@ -1,8 +1,8 @@
 import spur, os
 from subprocess import call
-from overlord import app
+from overlord import celery
 
-@app.task
+@celery.task
 def backupMySQLWithHost():
   sqlFile = open('/root/backup/sql.sql', 'wb')
   sqlResult = call(["mysqldump", "wiki"], universal_newlines=True, stdout=sqlFile)
@@ -13,7 +13,7 @@ def backupMySQLWithHost():
     return True
   return False
 
-@app.task
+@celery.task
 def backupMySQLWithoutHost():
   shell = spur.SshShell(
     hostname=os.environ['TNYU_BD_SERVER_IP'],
@@ -31,7 +31,7 @@ def backupMySQLWithoutHost():
     return False
   return True
 
-@app.task
+@celery.task
 def backupMongo():
   shell = spur.SshShell(
     hostname=os.environ['TNYU_API_SERVER_IP'],

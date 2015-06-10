@@ -1,9 +1,9 @@
 import os, spur, httplib, platform, time
-from overlord import app
+from overlord import celery
 from urlparse import urlparse
 from datetime import datetime, timedelta
 
-@app.task
+@celery.task
 def rebuildWikiPassword():
   shell = spur.SshShell(
     hostname=os.environ['TNYU_Wiki_SERVER_IP'],
@@ -31,7 +31,7 @@ def checkUptime(site):
     return False
 
 # Restarts services.tnyu.org if it goes down
-@app.task
+@celery.task
 def monitorServices():
   result = checkUptime(os.environ['TNYU_Services_SERVER_Address'])
   if not result:
