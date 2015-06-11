@@ -3,20 +3,6 @@ from overlord import celery
 from urlparse import urlparse
 from datetime import datetime, timedelta
 
-@celery.task
-def rebuildWikiPassword():
-  shell = spur.SshShell(
-    hostname=os.environ['TNYU_Wiki_SERVER_IP'],
-    username=os.environ['TNYU_Wiki_SERVER_USER'],
-    password=os.environ['TNYU_Wiki_SERVER_PASSWORD'],
-    missing_host_key=spur.ssh.MissingHostKey.accept
-  )
-  with shell:
-    result = shell.run(["node", "index.js"], cwd="/root/wiki-service", allow_error=True)
-  if result.return_code > 4:
-    return False
-  return True
-
 def checkUptime(site):
   url = urlparse(site)
   error = ""
@@ -30,6 +16,20 @@ def checkUptime(site):
   except:
     return False
 
+@celery.task
+def rebuildWikiPassword():
+  shell = spur.SshShell(
+    hostname=os.environ['TNYU_Wiki_SERVER_IP'],
+    username=os.environ['TNYU_Wiki_SERVER_USER'],
+    password=os.environ['TNYU_Wiki_SERVER_PASSWORD'],
+    missing_host_key=spur.ssh.MissingHostKey.accept,
+  )
+  with shell:
+    result = shell.run(["node", "index.js"], cwd="/root/wiki-service", allow_error=True)
+  if result.return_code > 4:
+    return False
+  return True
+
 # Restarts services.tnyu.org if it goes down
 @celery.task
 def monitorServices():
@@ -40,7 +40,7 @@ def monitorServices():
       hostname=os.environ['TNYU_Services_SERVER_IP'],
       username=os.environ['TNYU_Services_SERVER_USER'],
       password=os.environ['TNYU_Services_SERVER_PASSWORD'],
-      missing_host_key=spur.ssh.MissingHostKey.accept
+      missing_host_key=spur.ssh.MissingHostKey.accept,
     )
     with shell:
       shell.run(["forever", "stopall"], cwd="/root", allow_error=True)
@@ -62,11 +62,31 @@ def monitorTechatNYUOrgWebsite():
       hostname=os.environ['TNYU_Org_Website_SERVER_IP'],
       username=os.environ['TNYU_Org_Website_SERVER_USER'],
       password=os.environ['TNYU_Org_Website_SERVER_PASSWORD'],
-      missing_host_key=spur.ssh.MissingHostKey.accept
+      missing_host_key=spur.ssh.MissingHostKey.accept,
     )
     with shell:
       shell.run(["forever", "stopall"], cwd="/var/apps/tech-nyu-site", allow_error=True)
       result = shell.run(["forever", "start", "server.js"], cwd="/var/apps/tech-nyu-site/build", allow_error=True)
+    if result.return_code > 4:
+      return False
+    return True
+  return True
+
+# Restarts checkin.techatnyu.org if it goes down
+@celery.task
+def monitorCheckinWebsite():
+  result = checkUptime(os.environ['TNYU_Checkin_SERVER_Address'])
+  if not result:
+    # if services is down we have to restart it
+    shell = spur.SshShell(
+      hostname=os.environ['TNYU_Checkin_SERVER_IP'],
+      username=os.environ['TNYU_Checkin_SERVER_USER'],
+      password=os.environ['TNYU_Checkin_SERVER_PASSWORD'],
+      missing_host_key=spur.ssh.MissingHostKey.accept,
+    )
+    with shell:
+      shell.run(["forever", "stopall"], cwd="/root/signin", allow_error=True)
+      result = shell.run(["forever", "start", "app.js"], cwd="/root/signin", allow_error=True)
     if result.return_code > 4:
       return False
     return True

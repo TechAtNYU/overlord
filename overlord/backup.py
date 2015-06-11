@@ -19,7 +19,7 @@ def backupMySQLWithoutHost():
     hostname=os.environ['TNYU_BD_SERVER_IP'],
     username=os.environ['TNYU_BD_SERVER_USER'],
     password=os.environ['TNYU_BD_SERVER_PASSWORD'],
-    missing_host_key=spur.ssh.MissingHostKey.accept
+    missing_host_key=spur.ssh.MissingHostKey.accept,
   )
   with shell:
     passwordCombination = "-p" + os.environ['TNYU_BD_MYSQL_PASSWORD']
@@ -37,7 +37,7 @@ def backupMongo():
     hostname=os.environ['TNYU_API_SERVER_IP'],
     username=os.environ['TNYU_API_SERVER_USER'],
     password=os.environ['TNYU_API_SERVER_PASSWORD'],
-    missing_host_key=spur.ssh.MissingHostKey.accept
+    missing_host_key=spur.ssh.MissingHostKey.accept,
   )
   with shell:
     shell.run(["rm", "-rf", "dump"], cwd="/backup", allow_error=True)

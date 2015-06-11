@@ -53,6 +53,12 @@ def serverWeb(task):
     elif task == 'monitorServices':
         from server import monitorServices
         res = monitorServices.apply_async([])
+    elif task == 'monitorTechatNYUOrgWebsite':
+        from server import monitorTechatNYUOrgWebsite
+        res = monitorTechatNYUOrgWebsite.apply_async([])
+    elif task == 'monitorCheckinWebsite':
+        from server import monitorCheckinWebsite
+        res = monitorCheckinWebsite.apply_async([])
     context = {"id": res.task_id}
     result = task + "()"
     goto = "{}".format(context['id'])
@@ -68,6 +74,14 @@ def serverWebResult(task, task_id):
     elif task == 'monitorServices':
         from server import monitorServices
         retval = monitorServices.AsyncResult(task_id).get(timeout=1.0)
+        return repr(retval)
+    elif task == 'monitorTechatNYUOrgWebsite':
+        from server import monitorTechatNYUOrgWebsite
+        retval = monitorTechatNYUOrgWebsite.AsyncResult(task_id).get(timeout=1.0)
+        return repr(retval)
+    elif task == 'monitorCheckinWebsite':
+        from server import monitorCheckinWebsite
+        retval = monitorCheckinWebsite.AsyncResult(task_id).get(timeout=1.0)
         return repr(retval)
     return jsonify({"Error": "Wrong taskID"})
 
@@ -92,7 +106,7 @@ def backupWeb(task):
 
 # Server Result
 @app.route("/result/backup/<task>/<task_id>")
-def backupWebresult(task, task_id):
+def backupWebResult(task, task_id):
     if task == 'backupMySQLWithHost':
         from server import backupMySQLWithHost
         retval = backupMySQLWithHost.AsyncResult(task_id).get(timeout=1.0)
