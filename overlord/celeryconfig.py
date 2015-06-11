@@ -61,4 +61,14 @@ CELERYBEAT_SCHEDULE = {
       'schedule': crontab(minute='*/45'),
       'args': (),
   },
+  'every-day-monitor-serfvices': {
+      'task': 'server.monitorTechatNYUOrgWebsite',
+      'schedule': crontab(minute='*/45'),
+      'args': (),
+  },
+  'every-day-monitor-serfvices': {
+      'task': 'server.monitorCheckinWebsite',
+      'schedule': crontab(minute='*/45'),
+      'args': (),
+  },
 }

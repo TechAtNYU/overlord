@@ -4,6 +4,19 @@ Overlord now runs:
   - API server (MongoDB)
   - Wiki server (MySQL)
   - Business Development server (MySQL)
+  - Slack conversations daily
+- Monitoring and restarting:
+  - techatnyu.org
+  - services.tnyu.org
+  - checkin.techatnyu.org
+- Syncing
+  - API <-> Wiki password sync
+  - calendar-service
+- Rebuilding static front-end for:
+  - intranet
+  - intranet-staging
+  - startup-week
+  - ship
 
 Running overlord: 
 
