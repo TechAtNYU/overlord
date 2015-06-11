@@ -51,3 +51,23 @@ def monitorServices():
       return False
     return True
   return True
+
+# Restarts techatnyu.org if it goes down
+@celery.task
+def monitorTechatNYUOrgWebsite():
+  result = checkUptime(os.environ['TNYU_Org_Website_SERVER_Address'])
+  if not result:
+    # if services is down we have to restart it
+    shell = spur.SshShell(
+      hostname=os.environ['TNYU_Org_Website_SERVER_IP'],
+      username=os.environ['TNYU_Org_Website_SERVER_USER'],
+      password=os.environ['TNYU_Org_Website_SERVER_PASSWORD'],
+      missing_host_key=spur.ssh.MissingHostKey.accept
+    )
+    with shell:
+      shell.run(["forever", "stopall"], cwd="/var/apps/tech-nyu-site", allow_error=True)
+      result = shell.run(["forever", "start", "server.js"], cwd="/var/apps/tech-nyu-site/build", allow_error=True)
+    if result.return_code > 4:
+      return False
+    return True
+  return True
