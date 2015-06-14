@@ -1,7 +1,8 @@
-import os, httplib, platform, time, sendgrid
 from overlord import celery
-from urlparse import urlparse
-from datetime import datetime, timedelta
+from datetime import *
+from dateutil.parser import parse
+from dateutil.relativedelta import *
+import os, sendgrid, requests, json, calendar, pytz
 
 sg = sendgrid.SendGridClient(os.environ['TNYU_SendGrid_Username'], os.environ['TNYU_SendGrid_API'])
 
@@ -26,3 +27,26 @@ def sendEmail(emailsTo, subject, body):
       return False
   except SendGridError:
     return False
+
+# Get an update on the event status.
+# Unpublished and already passed date
+# Incomplete
+@celery.task
+def unpublishedEventCheck():
+  headers = {
+    'content-type': 'application/vnd.api+json', 
+    'accept': 'application/*, text/*', 
+    'x-api-key': os.environ['TNYU_API_KEY']
+  }
+  draftID = '54837a0ef07bddf3776c79da'
+  events = requests.get('https://api.tnyu.org/v2/events?filter[simple][status]=' + draftID, headers=headers, verify=False)
+  eventsData = json.loads(events.text)
+  today = datetime.now(pytz.UTC)
+  for event in eventsData['data']:
+    startDateTime = parse(event['attributes']['startDateTime'])
+    if startDateTime < today:
+      personID = event['links'] and event['links']['addedBy'] and event['links']['addedBy']['linkage'] and event['links']['addedBy']['linkage']['id']
+      person = requests.get('https://api.tnyu.org/v2/people/' + personID, headers=headers, verify=False)
+      personData = json.loads(person.text)
+      personEmail = personData['data'] and personData['data']['attributes'] and personData['data']['attributes']['contact'] and personData['data']['attributes']['contact']['email']
+  return True
