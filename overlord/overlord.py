@@ -65,7 +65,7 @@ def serverWeb(task):
     return jsonify(result=result, goto=goto)
 
 # Server Result
-@app.route("/result/static/<task>/<task_id>")
+@app.route("/result/server/<task>/<task_id>")
 def serverWebResult(task, task_id):
     if task == 'rebuildWikiPassword':
         from server import rebuildWikiPassword
