@@ -108,15 +108,15 @@ def backupWeb(task):
 @app.route("/result/backup/<task>/<task_id>")
 def backupWebResult(task, task_id):
     if task == 'backupMySQLWithHost':
-        from server import backupMySQLWithHost
+        from backup import backupMySQLWithHost
         retval = backupMySQLWithHost.AsyncResult(task_id).get(timeout=1.0)
         return repr(retval)
     elif task == 'backupMySQLWithoutHost':
-        from server import backupMySQLWithoutHost
+        from backup import backupMySQLWithoutHost
         retval = backupMySQLWithoutHost.AsyncResult(task_id).get(timeout=1.0)
         return repr(retval)
     elif task == 'backupMongo':
-        from server import backupMongo
+        from backup import backupMongo
         retval = backupMongo.AsyncResult(task_id).get(timeout=1.0)
         return repr(retval)
     return jsonify({"Error": "Wrong taskID"})

@@ -1,5 +1,7 @@
 Overlord now runs:
 
+- Reminder:
+  - Sending reminder emails for unpublished events on the API
 - Database backup on:
   - API server (MongoDB)
   - Wiki server (MySQL)
