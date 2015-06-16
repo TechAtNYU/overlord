@@ -13,7 +13,7 @@ def make_celery(app):
       'overlord',
         broker='amqp://guest:guest@localhost//',
         backend='amqp',
-        include=["backup", "server", "static"],
+        include=["backup", "server", "static", "reminder"],
     )
     celery.conf.update(app.config)
     TaskBase = celery.Task
@@ -26,12 +26,13 @@ def make_celery(app):
     return celery
 
 # Static
-@app.route("/task/static/triggerBuild/<repository>/<branch>")
-def staticWeb(repository, branch):
-    from static import triggerBuild
-    res = triggerBuild.apply_async([repository, branch])
+@app.route("/task/static/<task>/<repository>/<branch>")
+def staticWeb(task, repository, branch):
+    if task == 'triggerBuild':
+        from static import triggerBuild
+        res = triggerBuild.apply_async([repository, branch])
     context = {"id": res.task_id, "repository": repository, "branch": branch}
-    result = "triggerBuild((repository){}, (branch){})".format(context['repository'], context['branch'])
+    result = "triggerBuild({repository}, {branch})".format(context['repository'], context['branch'])
     goto = "{}".format(context['id'])
     return jsonify(result=result, goto=goto)
 
