@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Overlord</title>
+  <script src="http://cdn.rawgit.com/jpillora/xdomain/0.6.15/dist/0.6/xdomain.min.js" slave="https://api.tnyu.org/v2/proxy.html"></script>
+</head>
+<body>
+  
+</body>
+<script src="http://code.jquery.com/jquery-2.1.4.min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" charset="utf-8" async defer>
+  $.getJSON("https://api.tnyu.org/v2/people/me")
+    .done(function(user) {
+      if (user.data && user.data.attributes.roles && user.data.attributes.roles.length != 0) {
+        window.location.replace("/" + user.data.id + "/json");
+      }
+    });
+</script>
+</html>
