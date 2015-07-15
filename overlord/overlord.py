@@ -43,6 +43,7 @@ def getJSON(userId):
     personData = json.loads(person.text)
     if len(personData['data']['attributes']['roles']) > 0:
         return jsonify({
+	    'flower': 'http://overlord.tnyu.org:5555/',
             'static': [
             {
                 'name': 'triggerBuild',
