@@ -47,8 +47,8 @@ def getJSON(userId):
             {
                 'name': 'triggerBuild',
                 'parameters': ['repository', 'branch'],
-                'path': '/task/server/triggerBuild/<repository>/<branch>',
-                'result': '/result/backup/triggerBuild/<task_id>',
+                'path': '/task/static/triggerBuild/<repository>/<branch>',
+                'result': '/result/static/triggerBuild/<task_id>',
             }
             ],
             'server': [
@@ -95,6 +95,12 @@ def getJSON(userId):
                 'parameters': [],
                 'path': '/task/backup/backupMongo',
                 'result': '/result/backup/backupMongo/<task_id>',
+            },
+            {
+                'name': 'backupJira',
+                'parameters': [],
+                'path': '/task/backup/backupJira',
+                'result': '/result/backup/backupJira/<task_id>',
             }
             ]
         })
@@ -178,6 +184,10 @@ def backupWeb(task):
         from backup import backupMongo
         res = backupMongo.apply_async([])
         result = "backupMongo()"
+    elif task == 'backupJira':
+        from backup import backupJira
+        res = backupJira.apply_async([])
+        result = "backupJira()"
     context = {"id": res.task_id}
     goto = "{}".format(context['id'])
     return jsonify(result=result, goto=goto)

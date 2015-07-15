@@ -49,3 +49,19 @@ def backupMongo():
   if result.return_code > 4:
     return False
   return True
+
+@celery.task
+def backupJira():
+  shell = spur.SshShell(
+    hostname=os.environ['TNYU_Jira_SERVER_IP'],
+    username=os.environ['TNYU_Jira_SERVER_USER'],
+    password=os.environ['TNYU_Jira_SERVER_PASSWORD'],
+    missing_host_key=spur.ssh.MissingHostKey.accept,
+  )
+  with shell:
+    shell.run(["git", "add", "."], cwd="/var/atlassian/application-data/jira/export", allow_error=True)
+    shell.run(["git", "commit", "-am", '"Adding Updates"'], cwd="/var/atlassian/application-data/jira/export", allow_error=True)
+    result = shell.run(["git", "push", "-u", "origin", "master"], cwd="/var/atlassian/application-data/jira/export", allow_error=True)
+  if result.return_code > 4:
+    return False
+  return True

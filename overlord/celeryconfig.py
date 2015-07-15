@@ -21,10 +21,20 @@ CELERYBEAT_SCHEDULE = {
       'schedule': crontab(minute=30, hour=0),
       'args': (),
   },
+  'every-day-wiki-password-change': {
+      'task': 'server.rebuildWikiPassword',
+      'schedule': crontab(minute=45, hour=0),
+      'args': (),
+  },
   'every-day-slack': {
       'task': 'static.triggerBuild',
       'schedule': crontab(minute=0, hour=1),
       'args': ('slack-dump', 'master'),
+  },
+    'every-day-jira': {
+      'task': 'backup.backupJira',
+      'schedule': crontab(minute=30, hour=2),
+      'args': (),
   },
   'every-hour-intranet': {
       'task': 'static.triggerBuild',
@@ -50,11 +60,6 @@ CELERYBEAT_SCHEDULE = {
       'task': 'static.triggerBuild',
       'schedule': crontab(minute='*/15'),
       'args': ('calendar-service', 'master'),
-  },
-  'every-day-wiki-password-change': {
-      'task': 'server.rebuildWikiPassword',
-      'schedule': crontab(minute=45, hour=0),
-      'args': (),
   },
   'every-day-monitor-services': {
       'task': 'server.monitorServices',
