@@ -6,6 +6,7 @@ Overlord now runs:
   - API server (MongoDB)
   - Wiki server (MySQL)
   - Business Development server (MySQL)
+  - Jira (built-in)
   - Slack conversations daily
 - Monitoring and restarting:
   - techatnyu.org
