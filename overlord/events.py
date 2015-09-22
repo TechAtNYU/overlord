@@ -1,7 +1,7 @@
 import os, requests, json
 
-facebook_event_id = '1476573339312846'
-api_event_id = '55f8aa425b1374938d4f2eea'
+facebook_event_id = ''
+api_event_id = ''
 access_token = os.environ['FACEBOOK_ACCESS_TOKEN']
 
 def get_API_people_data():
@@ -37,6 +37,8 @@ def post_API_rsvp_data(event_id, user_id_list, api_event_id):
     event['links']['rsvps']['linkage'].append({'type': 'people', 'id': i})
   event_data = {}
   event_data['data'] = {}
+  event_data['data']['attributes'] = {}
+  # event_data['data']['attributes']['aims'] = 'Learn New Skills'
   event_data['data']['type'] = 'events'
   event_data['data']['id'] = api_event_id
   event_data['data']['links'] = {}
