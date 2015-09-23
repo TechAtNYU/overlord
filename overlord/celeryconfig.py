@@ -61,6 +61,11 @@ CELERYBEAT_SCHEDULE = {
       'schedule': crontab(minute='*/15'),
       'args': ('calendar-service', 'master'),
   },
+  'every-fifteen-minutes-job-board': {
+      'task': 'static.triggerBuild',
+      'schedule': crontab(minute='*/15'),
+      'args': ('job-board', 'master'),
+  },
   'every-day-monitor-services': {
       'task': 'server.monitorServices',
       'schedule': crontab(minute='*/45'),
