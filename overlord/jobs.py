@@ -1,6 +1,7 @@
 
 from flask import Flask
 from flask import request, redirect
+from flask_crossdomain import crossdomain
 from datetime import datetime
 import stripe
 import os
@@ -11,6 +12,7 @@ fixed_rate = 100.0
 #sg = sendgrid.SendGridClient(os.environ['TNYU_SendGrid_Username'], os.environ['TNYU_SendGrid_API'])
 
 @app.route("/jobs", methods=['POST'])
+@crossdomain(origin='*')
 def jobs():
 	token = request.form['stripeToken']
 	stripe.api_key = "sk_test_BQokikJOvBiI2HlWgH4olfQ2" # os.environ['TNYU_Stripe_API']
@@ -19,24 +21,24 @@ def jobs():
 	charge_amount_cents = int(charge_amount * 100.0)
 
 	try:
-			charge = stripe.Charge.create(
-					amount=charge_amount_cents, 
-					currency="usd",
-					source=token,
-					description="Tech@NYU job listing"
-			)
+		charge = stripe.Charge.create(
+			amount=100, 
+			currency="usd",
+			source=token,
+			description="Tech@NYU job listing"
+		)
 		
-			body = build_body(request.form, charge_amount, charge.id)
-			print(body)
+		body = build_body(request.form, charge_amount, charge.id)
+		print(body)
 
 	except stripe.error.CardError, e:
-			pass
+		pass
 
 	return redirect('http://jobsatnyu.com/')
 
 
 def get_charge(expiration_datetime):
-	expiration = datetime.strptime(expiration_datetime, '%m/%d/%Y %I:%M %p')
+	expiration = datetime.strptime(expiration_datetime, '%m/%d/%Y')
 	today = datetime.now()
 
 	dt = expiration.date() - today.date()
