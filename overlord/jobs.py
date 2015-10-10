@@ -10,7 +10,6 @@ app = Flask(__name__)
 fixed_rate = 100.0
 #sg = sendgrid.SendGridClient(os.environ['TNYU_SendGrid_Username'], os.environ['TNYU_SendGrid_API'])
 
-
 @app.route("/jobs", methods=['POST'])
 def jobs():
 	token = request.form['stripeToken']
@@ -49,7 +48,7 @@ def build_body(listing, amount_paid, charge_id):
 							<body>
 								Hi,<br />
 								
-								<p> A wild job listing has appeared. Head over to our <a href="https://api.tnyu.org/" target="_blank">pok&egravedex</a> and record this discovery. </p>
+								<p> A wild job listing has appeared. Head over to our <a href="https://api.tnyu.org/" target="_blank">pok&egravedex</a> to record this discovery. </p>
 
 								Position name: :position-name <br />
 								<br />
@@ -60,13 +59,13 @@ def build_body(listing, amount_paid, charge_id):
 								Position level: :position-level <br />
 								Expires At: :expiration <br />
 						
-								Company Name: :company-name <br />
+								Company Name: :employer <br />
 								Company URL: :url <br />
 								Application Email: :app-email <br />
 								Application URL: :app-url <br />
 						
 								Amount Paid: :paid <br />
-								Stripe paymentId: :payment-id <br />
+								Stripe chargeId: :charge-id <br />
 						
 								Thanks,<br />
 								The Job Board
@@ -76,7 +75,7 @@ def build_body(listing, amount_paid, charge_id):
 	for key in listing.keys():
 		body = body.replace(":" + key, listing[key])
 
-	body = (body.replace(":paid", str(amount_paid))).replace(":payment-id", str(charge_id))
+	body = (body.replace(":paid", str(amount_paid))).replace(":charge-id", str(charge_id))
 	return body
 
 if __name__ == "__main__":
