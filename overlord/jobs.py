@@ -11,14 +11,14 @@ app = Flask(__name__)
 
 #$/week
 fixed_rate = 100.0
-#sg = sendgrid.SendGridClient('technyu', 'P9TKUjMAq2gnCw')
+#sg = sendgrid.SendGridClient('techatnyu', os.environ['TNYU_send_grid_client_API'])
 
 @app.route("/jobs", methods=['POST'])
 def jobs():
 	token = request.form['stripeToken']
 	
 	#To test, use 'sk_test_BQokikJOvBiI2HlWgH4olfQ2' with card number 4242-4242-4242-4242
-	stripe.api_key = "sk_test_BQokikJOvBiI2HlWgH4olfQ2" # os.environ['TNYU_Stripe_API']
+	stripe.api_key = os.environ['TNYU_Stripe_API']
 	charge_amount = float(Decimal(request.form['charge']))
 	print charge_amount
 	charge_amount_cents = int(charge_amount * 100.0)
