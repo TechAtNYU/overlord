@@ -2,6 +2,8 @@ import os, requests, json
 
 from pytnyu import TNYUAPI
 
+requests.packages.urllib3.disable_warnings()
+
 api = TNYUAPI()
 facebook_event_id = ''
 api_event_id = ''
@@ -13,22 +15,11 @@ def get_API_people_data():
   return people
 
 def get_event_information(api_event_id):
-  headers = {
-    'content-type': 'application/vnd.api+json', 
-    'accept': 'application/*, text/*', 
-    'x-api-key': os.environ['TNYU_API_KEY_INFRA']
-  }
-  event = requests.get('https://api.tnyu.org/v2/events/' + api_event_id, headers=headers, verify=False)
-  event = json.loads(event.text)
+  event = api.get_resource('events/' + api_event_id)
   event = event['data']
   return event
 
 def post_API_rsvp_data(event_id, user_id_list, api_event_id):
-  headers = {
-    'content-type': 'application/vnd.api+json', 
-    'accept': 'application/*, text/*', 
-    'x-api-key': os.environ['TNYU_API_KEY']
-  }
   event = get_event_information(api_event_id)
   for i in user_id_list:
     event['links']['rsvps']['linkage'].append({'type': 'people', 'id': i})
@@ -41,7 +32,11 @@ def post_API_rsvp_data(event_id, user_id_list, api_event_id):
   event_data['data']['links'] = {}
   event_data['data']['links']['rsvps'] = {}
   event_data['data']['links']['rsvps']['linkage'] = event['links']['rsvps']['linkage']
-  print json.dumps(event_data)
+  headers = {
+    'content-type': 'application/vnd.api+json',
+    'accept': 'application/*, text/*',
+    'x-api-key': os.environ['TNYU_API_KEY']
+  }
   response = requests.patch('https://api.tnyu.org/v2/events/' + api_event_id, data=json.dumps(event_data), headers=headers, verify=False)
   print response
 
