@@ -1,17 +1,14 @@
 import os, requests, json
 
+from pytnyu import TNYUAPI
+
+api = TNYUAPI()
 facebook_event_id = ''
 api_event_id = ''
 access_token = os.environ['FACEBOOK_ACCESS_TOKEN']
 
 def get_API_people_data():
-  headers = {
-    'content-type': 'application/vnd.api+json', 
-    'accept': 'application/*, text/*', 
-    'x-api-key': os.environ['TNYU_API_KEY_INFRA']
-  }
-  people = requests.get('https://api.tnyu.org/v2/people', headers=headers, verify=False)
-  people = json.loads(people.text)
+  people = api.get_resource('people')
   people = people['data']
   return people
 
