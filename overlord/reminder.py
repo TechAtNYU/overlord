@@ -6,7 +6,7 @@ import os, sendgrid, requests, json, calendar, pytz
 
 sg = sendgrid.SendGridClient(os.environ['TNYU_SendGrid_Username'], os.environ['TNYU_SendGrid_API'])
 
-def sendEmail(emailsTo, subject, body):
+def sendEmail(emailsTo, subject, body, is_html=False):
   message = sendgrid.Mail()
   if isinstance(emailsTo, list):
     for email in emailsTo:
@@ -17,7 +17,12 @@ def sendEmail(emailsTo, subject, body):
   else:
     return False
   message.set_subject(subject)
-  message.set_text(body)
+
+  if is_html:
+    message.set_html(body)
+  else:
+    message.set_text(body)
+
   message.set_from('hello@techatnyu.org')
   try:
     x = sg.send(message)

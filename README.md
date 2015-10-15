@@ -1,5 +1,7 @@
 Overlord now runs:
 
+![Overlord](http://media.giphy.com/media/RFkWL5lqN3CZG/giphy-tumblr.gif)
+
 - Reminder:
   - Sending reminder emails for unpublished events on the API
 - Database backup on:
