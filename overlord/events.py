@@ -35,7 +35,7 @@ def post_API_rsvp_data(event_id, user_id_list, api_event_id):
   headers = {
     'content-type': 'application/vnd.api+json',
     'accept': 'application/*, text/*',
-    'x-api-key': os.environ['TNYU_API_KEY']
+    'x-api-key': os.environ['TNYU_API_KEY_ADMIN']
   }
   response = requests.patch('https://api.tnyu.org/v2/events/' + api_event_id, data=json.dumps(event_data), headers=headers, verify=False)
   print response
