@@ -54,12 +54,6 @@ def getJSON(userId):
             ],
             'server': [
             {
-                'name': 'rebuildWikiPassword',
-                'parameters': [],
-                'path': '/task/server/rebuildWikiPassword',
-                'result': '/result/server/rebuildWikiPassword/<task_id>',
-            },
-            {
                 'name': 'monitorServices',
                 'parameters': [],
                 'path': '/task/server/monitorServices',
