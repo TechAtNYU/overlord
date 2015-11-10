@@ -74,12 +74,6 @@ def getJSON(userId):
             ],
             'backup': [
             {
-                'name': 'backupMySQLWithHost',
-                'parameters': [],
-                'path': '/task/backup/backupMySQLWithHost',
-                'result': '/result/backup/backupMySQLWithHost/<task_id>',
-            },
-            {
                 'name': 'backupMySQLWithoutHost',
                 'parameters': [],
                 'path': '/task/backup/backupMySQLWithoutHost',
@@ -167,11 +161,7 @@ def serverWebResult(task, task_id):
 # Backup
 @app.route("/task/backup/<task>")
 def backupWeb(task):
-    if task == 'backupMySQLWithHost':
-        from backup import backupMySQLWithHost
-        res = backupMySQLWithHost.apply_async([])
-        result = "backupMySQLWithHost()"
-    elif task == 'backupMySQLWithoutHost':
+    if task == 'backupMySQLWithoutHost':
         from backup import backupMySQLWithoutHost
         res = backupMySQLWithoutHost.apply_async([])
         result = "backupMySQLWithoutHost()"
@@ -190,11 +180,7 @@ def backupWeb(task):
 # Server Result
 @app.route("/result/backup/<task>/<task_id>")
 def backupWebResult(task, task_id):
-    if task == 'backupMySQLWithHost':
-        from backup import backupMySQLWithHost
-        retval = backupMySQLWithHost.AsyncResult(task_id).get(timeout=1.0)
-        return repr(retval)
-    elif task == 'backupMySQLWithoutHost':
+    if task == 'backupMySQLWithoutHost':
         from backup import backupMySQLWithoutHost
         retval = backupMySQLWithoutHost.AsyncResult(task_id).get(timeout=1.0)
         return repr(retval)
