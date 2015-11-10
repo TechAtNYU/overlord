@@ -3,7 +3,7 @@ from subprocess import call
 from overlord import celery
 
 @celery.task
-def backupMySQLWithoutHost():
+def backupWikiMySQL():
   shell = spur.SshShell(
     hostname=os.environ['TNYU_BD_SERVER_IP'],
     username=os.environ['TNYU_BD_SERVER_USER'],

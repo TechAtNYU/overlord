@@ -74,10 +74,10 @@ def getJSON(userId):
             ],
             'backup': [
             {
-                'name': 'backupMySQLWithoutHost',
+                'name': 'backupWikiMySQL',
                 'parameters': [],
-                'path': '/task/backup/backupMySQLWithoutHost',
-                'result': '/result/backup/backupMySQLWithoutHost/<task_id>',
+                'path': '/task/backup/backupWikiMySQL',
+                'result': '/result/backup/backupWikiMySQL/<task_id>',
             },
             {
                 'name': 'backupMongo',
@@ -161,10 +161,10 @@ def serverWebResult(task, task_id):
 # Backup
 @app.route("/task/backup/<task>")
 def backupWeb(task):
-    if task == 'backupMySQLWithoutHost':
-        from backup import backupMySQLWithoutHost
-        res = backupMySQLWithoutHost.apply_async([])
-        result = "backupMySQLWithoutHost()"
+    if task == 'backupWikiMySQL':
+        from backup import backupWikiMySQL
+        res = backupWikiMySQL.apply_async([])
+        result = "backupWikiMySQL()"
     elif task == 'backupMongo':
         from backup import backupMongo
         res = backupMongo.apply_async([])
@@ -180,9 +180,9 @@ def backupWeb(task):
 # Server Result
 @app.route("/result/backup/<task>/<task_id>")
 def backupWebResult(task, task_id):
-    if task == 'backupMySQLWithoutHost':
-        from backup import backupMySQLWithoutHost
-        retval = backupMySQLWithoutHost.AsyncResult(task_id).get(timeout=1.0)
+    if task == 'backupWikiMySQL':
+        from backup import backupWikiMySQL
+        retval = backupWikiMySQL.AsyncResult(task_id).get(timeout=1.0)
         return repr(retval)
     elif task == 'backupMongo':
         from backup import backupMongo
