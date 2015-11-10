@@ -3,17 +3,6 @@ from subprocess import call
 from overlord import celery
 
 @celery.task
-def backupMySQLWithHost():
-  sqlFile = open('/root/backup/sql.sql', 'wb')
-  sqlResult = call(["mysqldump", "wiki"], universal_newlines=True, stdout=sqlFile)
-  if sqlResult == 0:
-    call(["git", "add", "."], cwd="/root/backup/")
-    call(["git", "commit", "-am", '"Adding Updates"'], cwd="/root/backup/")
-    call(["git", "push", "-u", "origin", "master"], cwd="/root/backup/")
-    return True
-  return False
-
-@celery.task
 def backupMySQLWithoutHost():
   shell = spur.SshShell(
     hostname=os.environ['TNYU_BD_SERVER_IP'],

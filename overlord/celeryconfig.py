@@ -11,11 +11,6 @@ CELERYBEAT_SCHEDULE = {
       'schedule': crontab(minute=0, hour=0),
       'args': (),
   },
-  'every-day-wiki': {
-      'task': 'backup.backupMySQLWithHost',
-      'schedule': crontab(minute=15, hour=0),
-      'args': (),
-  },
   'every-day-bd': {
       'task': 'backup.backupMySQLWithoutHost',
       'schedule': crontab(minute=30, hour=0),
