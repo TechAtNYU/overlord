@@ -6,11 +6,11 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_ENABLE_UTC = True
 CELERY_TIMEZONE = 'America/New_York'
 CELERYBEAT_SCHEDULE = {
-    # 'every-day-api': {
-    #     'task': 'backup.backup_mongo',
-    #     'schedule': crontab(minute=0, hour=0),
-    #     'args': (),
-    # },
+    'every-day-api': {
+        'task': 'backup.backup_mongo',
+        'schedule': crontab(minute=0, hour=0),
+        'args': (),
+    },
     'every-day-bd': {
         'task': 'backup.backup_bd_mysql',
         'schedule': crontab(minute=30, hour=0),
