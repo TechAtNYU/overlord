@@ -40,13 +40,12 @@ def send_email(emailsTo, subject, body, is_html=False):
     except SendGridError:
         return False
 
-# Get an update on the event status.
-# Unpublished and already passed date
-# Incomplete
-
 
 @celery.task
 def unpublished_event_check():
+    # Get an update on the event status.
+    # Unpublished and already passed date
+    # Incomplete
     headers = {
         'content-type': 'application/vnd.api+json',
         'accept': 'application/*, text/*',

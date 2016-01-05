@@ -30,11 +30,10 @@ def make_celery(app):
     celery.Task = ContextTask
     return celery
 
-# Static
-
 
 @app.route("/")
 def homePage():
+    # Static
     return render_template('index.html')
 
 
