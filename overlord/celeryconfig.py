@@ -27,32 +27,32 @@ CELERYBEAT_SCHEDULE = {
         'args': (),
     },
     'every-hour-intranet': {
-        'task': 'static.triggerBuild',
+        'task': 'static.trigger_build',
         'schedule': crontab(minute='*/45'),
         'args': ('intranet', 'master'),
     },
     'every-hour-intranet-develop': {
-        'task': 'static.triggerBuild',
+        'task': 'static.trigger_build',
         'schedule': crontab(minute='*/45'),
         'args': ('intranet', 'develop'),
     },
     'every-hour-startup-week': {
-        'task': 'static.triggerBuild',
+        'task': 'static.trigger_build',
         'schedule': crontab(minute='*/45'),
         'args': ('startup-week', 'master'),
     },
     'every-hour-ship': {
-        'task': 'static.triggerBuild',
+        'task': 'static.trigger_build',
         'schedule': crontab(minute='*/45'),
         'args': ('ship', 'master'),
     },
     'every-fifteen-minutes-calendar': {
-        'task': 'static.triggerBuild',
+        'task': 'static.trigger_build',
         'schedule': crontab(minute='*/15'),
         'args': ('calendar-service', 'master'),
     },
     'every-fifteen-minutes-job-board': {
-        'task': 'static.triggerBuild',
+        'task': 'static.trigger_build',
         'schedule': crontab(minute='*/15'),
         'args': ('job-board', 'master'),
     },
