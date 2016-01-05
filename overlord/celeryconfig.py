@@ -12,7 +12,7 @@ CELERYBEAT_SCHEDULE = {
     #     'args': (),
     # },
     'every-day-bd': {
-        'task': 'backup.backup_bd_MySQL',
+        'task': 'backup.backup_bd_mysql',
         'schedule': crontab(minute=30, hour=0),
         'args': (),
     },

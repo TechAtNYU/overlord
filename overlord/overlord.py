@@ -75,10 +75,10 @@ def getJSON(userId):
             ],
             'backup': [
                 {
-                    'name': 'backup_bd_MySQL',
+                    'name': 'backup_bd_mysql',
                     'parameters': [],
-                    'path': '/task/backup/backup_bd_MySQL',
-                    'result': '/result/backup/backup_bd_MySQL/<task_id>',
+                    'path': '/task/backup/backup_bd_mysql',
+                    'result': '/result/backup/backup_bd_mysql/<task_id>',
                 },
                 {
                     'name': 'backup_mongo',
@@ -155,10 +155,10 @@ def serverWebResult(task, task_id):
 @app.route("/task/backup/<task>")
 def backupWeb(task):
     # Backup
-    if task == 'backup_bd_MySQL':
-        from backup import backup_bd_MySQL
-        res = backup_bd_MySQL.apply_async([])
-        result = "backup_bd_MySQL()"
+    if task == 'backup_bd_mysql':
+        from backup import backup_bd_mysql
+        res = backup_bd_mysql.apply_async([])
+        result = "backup_bd_mysql()"
     elif task == 'backup_mongo':
         from backup import backup_mongo
         res = backup_mongo.apply_async([])
@@ -175,9 +175,9 @@ def backupWeb(task):
 @app.route("/result/backup/<task>/<task_id>")
 def backupWebResult(task, task_id):
     # Server Result
-    if task == 'backup_bd_MySQL':
-        from backup import backup_bd_MySQL
-        retval = backup_bd_MySQL.AsyncResult(task_id).get(timeout=1.0)
+    if task == 'backup_bd_mysql':
+        from backup import backup_bd_mysql
+        retval = backup_bd_mysql.AsyncResult(task_id).get(timeout=1.0)
         return repr(retval)
     elif task == 'backup_mongo':
         from backup import backup_mongo

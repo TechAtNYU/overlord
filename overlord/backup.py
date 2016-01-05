@@ -5,7 +5,7 @@ from overlord import celery
 
 
 @celery.task
-def backup_bd_MySQL():
+def backup_bd_mysql():
     shell = spur.SshShell(
         hostname=os.environ['TNYU_BD_SERVER_IP'],
         username=os.environ['TNYU_BD_SERVER_USER'],
