@@ -37,8 +37,8 @@ def backup_mongo():
     with shell:
         shell.run(["rm", "-rf", "dump"], cwd="/backup", allow_error=True)
         shell.run(["mkdir", "dump"], cwd="/backup", allow_error=True)
-        shell.run(["mongodump", "-h", "localhost", "-o", "dump",
-                   "-d", "platform"], cwd="/backup", allow_error=True)
+        shell.run(["mongodump", "-h", "localhost", "-o", "dump", "-u", os.environ['TNYU_API_MONGO_USER'],
+                   '-p', os.environ['TNYU_API_MONGO_PW']], cwd="/backup", allow_error=True)
         shell.run(["git", "add", "."], cwd="/backup", allow_error=True)
         shell.run(["git", "commit", "-am", '"Adding Updates"'],
                   cwd="/backup", allow_error=True)
