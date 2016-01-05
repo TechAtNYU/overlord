@@ -6,16 +6,13 @@ Overlord now runs:
   - Sending reminder emails for unpublished events on the API
 - Database backup on:
   - API server (MongoDB)
-  - Wiki server (MySQL)
   - Business Development server (MySQL)
   - Jira (built-in)
   - Slack conversations daily
 - Monitoring and restarting:
   - techatnyu.org
   - services.tnyu.org
-  - checkin.techatnyu.org
 - Syncing
-  - API <-> Wiki password sync
   - calendar-service
 - Rebuilding static front-end for:
   - intranet
@@ -23,11 +20,14 @@ Overlord now runs:
   - startup-week
   - ship
 
-Running overlord: 
+Running overlord:
 
-`cd overlord && make`
+- `cd overlord`
+- `nohup make &` (run in background)
+- `nohup python overlord.py &` (run in background)
+- `nohup flower --port=5555 --basic_auth=tnyu:pw1 &` (run in background)
 
-Running tasks: 
+Running tasks:
 
 ```python
 from overlord import add
