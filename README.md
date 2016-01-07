@@ -22,9 +22,8 @@ Overlord now runs:
 
 Running overlord:
 
-- `cd overlord`
-- `nohup make &` (run in background)
-- `nohup python overlord.py &` (run in background)
+- `supervisord`
+- `supervisorctl` (to see if everything starts)
 - `nohup flower --port=5555 --basic_auth=tnyu:pw1 &` (run in background)
 
 Running tasks:
