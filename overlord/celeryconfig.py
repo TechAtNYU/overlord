@@ -26,6 +26,11 @@ CELERYBEAT_SCHEDULE = {
         'schedule': crontab(minute=30, hour=2),
         'args': (),
     },
+    'every-day-discuss': {
+        'task': 'backup.backup_discuss',
+        'schedule': crontab(minute=45, hour=2),
+        'args': (),
+    },
     'every-hour-intranet': {
         'task': 'static.trigger_build',
         'schedule': crontab(minute='*/45'),

@@ -90,6 +90,12 @@ def getJSON(userId):
                     'parameters': [],
                     'path': '/task/backup/backup_jira',
                     'result': '/result/backup/backup_jira/<task_id>',
+                },
+                {
+                    'name': 'backup_discuss',
+                    'parameters': [],
+                    'path': '/task/backup/backup_discuss',
+                    'result': '/result/backup/backup_discuss/<task_id>',
                 }
             ]
         })
@@ -166,6 +172,10 @@ def backupWeb(task):
         from backup import backup_jira
         res = backup_jira.apply_async([])
         result = "backup_jira()"
+    elif task == 'backup_discuss':
+        from backup import backup_discuss
+        res = backup_discuss.apply_async([])
+        result = "backup_discuss()"
     context = {"id": res.task_id}
     goto = "{}".format(context['id'])
     return jsonify(result=result, goto=goto)
@@ -185,6 +195,10 @@ def backupWebResult(task, task_id):
     elif task == 'backup_jira':
         from backup import backup_jira
         retval = backup_jira.AsyncResult(task_id).get(timeout=1.0)
+        return repr(retval)
+    elif task == 'backup_discuss':
+        from backup import backup_discuss
+        retval = backup_discuss.AsyncResult(task_id).get(timeout=1.0)
         return repr(retval)
     return jsonify({"Error": "Wrong taskID"})
 

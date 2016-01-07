@@ -67,3 +67,22 @@ def backup_jira():
     if result.return_code > 4:
         return False
     return True
+
+@celery.task
+def backup_discuss():
+    shell = spur.SshShell(
+        hostname=os.environ['TNYU_DISCUSS_SERVER_IP'],
+        username=os.environ['TNYU_DISCUSS_SERVER_USER'],
+        private_key_file="/home/api/.ssh/id_rsa",
+        missing_host_key=spur.ssh.MissingHostKey.accept,
+    )
+    with shell:
+        shell.run(["git", "add", "."],
+                  cwd="/var/discourse/shared/standalone/backups/default", allow_error=True)
+        shell.run(["git", "commit", "-am", '"Adding Updates"'],
+                  cwd="/var/discourse/shared/standalone/backups/default", allow_error=True)
+        result = shell.run(["git", "push", "-u", "origin", "master"],
+                           cwd="/var/discourse/shared/standalone/backups/default", allow_error=True)
+    if result.return_code > 4:
+        return False
+    return True

@@ -25,6 +25,8 @@ Running overlord:
 - `supervisord`
 - `supervisorctl` (to see if everything starts)
 - `nohup flower --port=5555 --basic_auth=tnyu:pw1 &` (run in background)
+- To restart something: `supervisorctl restart celeryd` or `supervisorctl restart overlord`
+- To stop something: `supervisorctl stop celeryd` (etc.)
 
 Running tasks:
 
