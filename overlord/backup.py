@@ -68,6 +68,7 @@ def backup_jira():
         return False
     return True
 
+
 @celery.task
 def backup_discuss():
     shell = spur.SshShell(

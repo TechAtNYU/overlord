@@ -112,7 +112,8 @@ def staticWeb(task, repository, branch):
     if task == 'trigger_build':
         from static import trigger_build
         res = trigger_build.apply_async([repository, branch])
-        context = {"id": res.task_id, "repository": repository, "branch": branch}
+        context = {"id": res.task_id,
+                   "repository": repository, "branch": branch}
         result = "trigger_build({repository}, {branch})".format(
             context['repository'], context['branch'])
         goto = "{}".format(context['id'])
