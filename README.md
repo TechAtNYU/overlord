@@ -1,7 +1,10 @@
+# Overlord
+
 Overlord now runs:
 
 ![Overlord](http://media.giphy.com/media/RFkWL5lqN3CZG/giphy-tumblr.gif)
 
+#### Features 
 - Reminder:
   - Sending reminder emails for unpublished events on the API
 - Database backup on:
@@ -21,13 +24,14 @@ Overlord now runs:
   - startup-week
   - ship
 
-Running overlord:
+#### Running Overlord:
 
-- `supervisord`
-- `supervisorctl` (to see if everything starts)
-- `nohup flower --port=5555 --basic_auth=tnyu:pw1 &` (run in background)
-- To restart something: `supervisorctl restart celeryd` or `supervisorctl restart overlord`
-- To stop something: `supervisorctl stop celeryd` (etc.)
+- Install dependencies with `$ pip install -r requirements.txt`
+- `$ supervisord`
+- `$ supervisorctl` (to see if everything starts)
+- `$ nohup flower --port=5555 --basic_auth=tnyu:pw1 &` (run in background)
+- To restart something: `$ supervisorctl restart celeryd` or `supervisorctl restart overlord`
+- To stop something: `$ supervisorctl stop celeryd` (etc.)
 
 Running tasks:
 
