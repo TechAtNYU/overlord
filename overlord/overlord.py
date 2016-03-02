@@ -11,12 +11,14 @@ app = Flask(__name__)
 app.config.from_object(celeryconfig)
 
 
+# Function to run celery alongside Flask. It ties the configuration of
+# Celery and Flask together. Then they can be used together very easily.
 def make_celery(app):
     celery = Celery(
         'overlord',
         broker='amqp://guest:guest@localhost//',
         backend='amqp',
-        include=["backup", "server", "static", "reminder"],
+        include=["backup", "server", "static"],
     )
     celery.conf.update(app.config)
     TaskBase = celery.Task
@@ -31,14 +33,20 @@ def make_celery(app):
     return celery
 
 
+# Renders the homepage
 @app.route("/")
-def homePage():
+def home_page():
     # Static
     return render_template('index.html')
 
 
+# Gets the userId of the person currently logged in and verifies if the
+# person in question is a TEAM_MEMBER. This is done because any individual
+# can run any task. Mostly because of security through obscurity.
 @app.route("/<userId>/json")
-def getJSON(userId):
+def get_JSON(userId):
+
+    # Makes a call to the API to verify the person
     headers = {
         'content-type': 'application/vnd.api+json',
         'accept': 'application/*, text/*',
@@ -46,10 +54,16 @@ def getJSON(userId):
     }
     person = requests.get('https://api.tnyu.org/v2/people/' +
                           userId, headers=headers, verify=False)
+
+    # The person is not logged in
     if person.status_code is not 200:
         return jsonify({'status': '401'})
+
+    # Authentication is successful
     personData = json.loads(person.text)
     if len(personData['data']['attributes']['roles']) > 0:
+        # Throws a JSON object that contains all of the tasks that
+        # the users can run.
         return jsonify({
             'flower': 'http://overlord.tnyu.org:5555/',
             'static': [
@@ -106,9 +120,10 @@ def getJSON(userId):
     return jsonify({'status': '401'})
 
 
+# Adheres to running all of the tasks in the static.py file
 @app.route("/task/static/<task>/<repository>/<branch>")
-def staticWeb(task, repository, branch):
-    # Static
+def static_web(task, repository, branch):
+    # Runs a particular task that the user provides
     if task == 'trigger_build':
         from static import trigger_build
         res = trigger_build.apply_async([repository, branch])
@@ -123,9 +138,10 @@ def staticWeb(task, repository, branch):
     return jsonify({"Error": "Wrong Task"})
 
 
+# Adheres to running all of the tasks in the static.py file
 @app.route("/result/static/<task>/<task_id>")
-def staticWebResult(task, task_id):
-    # Static Result
+def static_web_result(task, task_id):
+    # Static Result for running a particular task
     if task == 'trigger_build':
         from static import trigger_build
         retval = trigger_build.AsyncResult(task_id).get(timeout=1.0)
@@ -135,9 +151,10 @@ def staticWebResult(task, task_id):
     return jsonify({"Error": "Wrong taskID"})
 
 
+# Adheres to running all of the tasks in the server.py file
 @app.route("/task/server/<task>")
-def serverWeb(task):
-    # Server
+def server_web(task):
+    # Runs a particular task that the user provides
     if task == 'monitor_services':
         from server import monitor_services
         res = monitor_services.apply_async([])
@@ -152,9 +169,10 @@ def serverWeb(task):
     return jsonify(result=result, goto=goto)
 
 
+# Adheres to results of all the tasks in the server.py file
 @app.route("/result/server/<task>/<task_id>")
-def serverWebResult(task, task_id):
-    # Server Result
+def server_web_result(task, task_id):
+    # Server Result for running a particular task
     if task == 'monitor_services':
         from server import monitor_services
         retval = monitor_services.AsyncResult(task_id).get(timeout=1.0)
@@ -169,14 +187,11 @@ def serverWebResult(task, task_id):
     return jsonify({"Error": "Wrong taskID"})
 
 
+# Adheres to running all of the tasks in the backup.py file
 @app.route("/task/backup/<task>")
 def backupWeb(task):
     # Backup
-    if task == 'backup_bd_mysql':
-        from backup import backup_bd_mysql
-        res = backup_bd_mysql.apply_async([])
-        result = "backup_bd_mysql()"
-    elif task == 'backup_mongo':
+    if task == 'backup_mongo':
         from backup import backup_mongo
         res = backup_mongo.apply_async([])
         result = "backup_mongo()"
@@ -195,14 +210,11 @@ def backupWeb(task):
     return jsonify(result=result, goto=goto)
 
 
+# Adheres to results of all the tasks in the backup.py file
 @app.route("/result/backup/<task>/<task_id>")
 def backupWebResult(task, task_id):
     # Server Result
-    if task == 'backup_bd_mysql':
-        from backup import backup_bd_mysql
-        retval = backup_bd_mysql.AsyncResult(task_id).get(timeout=1.0)
-        return repr(retval)
-    elif task == 'backup_mongo':
+    if task == 'backup_mongo':
         from backup import backup_mongo
         retval = backup_mongo.AsyncResult(task_id).get(timeout=1.0)
         return repr(retval)

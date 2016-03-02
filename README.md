@@ -4,7 +4,7 @@ Overlord now runs:
 
 ![Overlord](http://media.giphy.com/media/RFkWL5lqN3CZG/giphy-tumblr.gif)
 
-#### Features 
+#### Features
 - Reminder:
   - Sending reminder emails for unpublished events on the API
 - Database backup on:
@@ -24,7 +24,13 @@ Overlord now runs:
   - startup-week
   - ship
 
-#### Running Overlord:
+#### Running Overlord (in development):
+
+- Install dependencies with `$ pip install -r requirements.txt`
+- Install and/or run [RabbitMQ](https://www.rabbitmq.com/).
+- `$ celery -A overlord.celery worker --loglevel=info &` (run in background)
+
+#### Running Overlord (in production):
 
 - Install dependencies with `$ pip install -r requirements.txt`
 - `$ supervisord`
