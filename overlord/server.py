@@ -49,7 +49,7 @@ def monitor_services():
                                cwd="/root/proxy", allow_error=True)
         if result.return_code > 4:
             return False
-        return True
+
     return True
 
 
@@ -77,5 +77,5 @@ def monitor_techatnyu_org():
                                allow_error=True)
         if result.return_code > 4:
             return False
-        return True
+
     return True
