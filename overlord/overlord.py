@@ -38,7 +38,7 @@ def make_celery(app):
 @app.route("/")
 def home_page():
     """
-    # Renders the homepage
+    Renders the homepage
     """
     return render_template('index.html')
 
