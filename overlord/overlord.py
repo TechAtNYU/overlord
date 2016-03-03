@@ -1,10 +1,10 @@
 from __future__ import absolute_import
 import os
 import requests
-from os import path, environ
-import json
-from flask import Flask, Blueprint, abort, jsonify, request, session, render_template
 import celeryconfig
+from os import path, environ
+
+from flask import Flask, jsonify, render_template
 from celery import Celery
 
 app = Flask(__name__)
@@ -241,6 +241,11 @@ def backup_web_result(task, task_id):
         return repr(retval)
 
     return jsonify({"Error": "Wrong Task"})
+
+
+@app.errorhandler(404)
+def error(e):
+    return jsonify({'status': 404})
 
 celery = make_celery(app)
 
