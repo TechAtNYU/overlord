@@ -4,11 +4,13 @@ from subprocess import call
 from overlord import celery
 
 
-# This task runs the MongoDB backup on our API server.
-# Then it commits the result to the "api-db-backups"
-# repository on Github.
 @celery.task
 def backup_mongo():
+    """
+    This task runs the MongoDB backup on our API server.
+    Then it commits the result to the "api-db-backups"
+    repository on Github.
+    """
     shell = spur.SshShell(
         hostname=os.environ['TNYU_API_SERVER_IP'],
         username=os.environ['TNYU_API_SERVER_USER'],
@@ -20,8 +22,8 @@ def backup_mongo():
         shell.run(["rm", "-rf", "dump"], cwd=api_dir, allow_error=True)
         shell.run(["mkdir", "dump"], cwd=api_dir, allow_error=True)
         shell.run(["mongodump", "-h", "localhost", "-o", "dump", "-u",
-                  os.environ['TNYU_API_MONGO_USER'],
-                  '-p', os.environ['TNYU_API_MONGO_PW']],
+                   os.environ['TNYU_API_MONGO_USER'],
+                   '-p', os.environ['TNYU_API_MONGO_PW']],
                   cwd=api_dir, allow_error=True)
         shell.run(["git", "add", "."], cwd=api_dir, allow_error=True)
         shell.run(["git", "commit", "-am", '"Adding Updates"'],
@@ -33,11 +35,13 @@ def backup_mongo():
     return True
 
 
-# This task runs the Jira backup on our Jira server.
-# Then it commits the result to the "jira-db-backups"
-# repository on Github.
 @celery.task
 def backup_jira():
+    """
+    This task runs the Jira backup on our Jira server.
+    Then it commits the result to the "jira-db-backups"
+    repository on Github.
+    """
     shell = spur.SshShell(
         hostname=os.environ['TNYU_Jira_SERVER_IP'],
         username=os.environ['TNYU_Jira_SERVER_USER'],
@@ -60,11 +64,13 @@ def backup_jira():
     return True
 
 
-# This task runs the Discuss backup on our Discuss server.
-# Then it commits the result to the "discuss-db-backups"
-# repository on Github.
 @celery.task
 def backup_discuss():
+    """
+    This task runs the Discuss backup on our Discuss server.
+    Then it commits the result to the "discuss-db-backups"
+    repository on Github.
+    """
     shell = spur.SshShell(
         hostname=os.environ['TNYU_DISCUSS_SERVER_IP'],
         username=os.environ['TNYU_DISCUSS_SERVER_USER'],

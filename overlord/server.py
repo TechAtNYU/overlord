@@ -8,9 +8,11 @@ from urlparse import urlparse
 from datetime import datetime, timedelta
 
 
-# Simple script to perform HTTP requests to any URL and see if it
-# throws an exception when we do a HEAD request.
 def check_uptime(site):
+    """
+    Simple script to perform HTTP requests to any URL and see if it
+    throws an exception when we do a HEAD request.
+    """
     url = urlparse(site)
     error = ""
     try:
@@ -24,11 +26,13 @@ def check_uptime(site):
         return False
 
 
-# Does an SSH into the services server and restarts the server if it seems that
-# it is down. Useful since it catches most bugs.
 @celery.task
 def monitor_services():
-    # Restarts services.tnyu.org if it goes down
+    """
+    Does an SSH into the services server and restarts the server if it seems
+    that it is down. Useful since it catches most bugs:
+    Restarts services.tnyu.org if it goes down.
+    """
     result = check_uptime(os.environ['TNYU_Services_SERVER_Address'])
     if not result:
         # if services is down we have to restart it
@@ -52,11 +56,13 @@ def monitor_services():
     return True
 
 
-# Does an SSH into the API server and restarts the server if it seems that
-# it is down. Useful since it catches most bugs.
 @celery.task
 def monitor_techatnyu_org():
-    # Restarts techatnyu.org if it goes down
+    """
+    Does an SSH into the API server and restarts the server if it seems that
+    it is down. Useful since it catches most bugs:
+    # Restarts techatnyu.org if it goes down.
+    """
     result = check_uptime(os.environ['TNYU_Org_Website_SERVER_Address'])
     if not result:
         # if services is down we have to restart it
