@@ -14,13 +14,10 @@ def check_uptime(site):
     throws an exception when we do a HEAD request.
     """
     url = urlparse(site)
-    error = ""
     try:
         conn = httplib.HTTPConnection(url[1])
         # Use a HEAD request to get the status code
         conn.request("HEAD", url[2])
-        status = conn.getresponse()
-        error = status.status
         return True
     except:
         return False
