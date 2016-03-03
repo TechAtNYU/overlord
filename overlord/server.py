@@ -1,12 +1,9 @@
 import os
 import spur
 import httplib
-import platform
-import time
+
 from overlord import celery
 from urlparse import urlparse
-from datetime import datetime, timedelta
-
 
 def check_uptime(site):
     """
