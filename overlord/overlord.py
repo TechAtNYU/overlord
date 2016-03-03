@@ -65,7 +65,7 @@ def get_JSON(userId):
         return jsonify({'status': '401'})
 
     # Authentication is successful
-    personData = json.loads(person.text)
+    personData = person.json()
     if len(personData['data']['attributes']['roles']) > 0:
         # Throws a JSON object that contains all of the tasks that
         # the users can run.
@@ -140,8 +140,7 @@ def static_web(task, repository, branch):
             context['repository'], context['branch'])
         goto = "{}".format(context['id'])
         return jsonify(result=result, goto=goto)
-    else:
-        return jsonify({"Error": "Wrong Task"})
+
     return jsonify({"Error": "Wrong Task"})
 
 
@@ -155,9 +154,8 @@ def static_web_result(task, task_id):
         from static import trigger_build
         retval = trigger_build.AsyncResult(task_id).get(timeout=1.0)
         return repr(retval)
-    else:
-        return jsonify({"Error": "Wrong Task"})
-    return jsonify({"Error": "Wrong taskID"})
+
+    return jsonify({"Error": "Wrong Task"})
 
 
 @app.route("/task/server/<task>")
@@ -169,15 +167,12 @@ def server_web(task):
     if task == 'monitor_services':
         from server import monitor_services
         res = monitor_services.apply_async([])
-    elif task == 'monitor_techatnyu_org':
+
+    if task == 'monitor_techatnyu_org':
         from server import monitor_techatnyu_org
         res = monitor_techatnyu_org.apply_async([])
-    else:
-        return jsonify({"Error": "Wrong Task"})
-    context = {"id": res.task_id}
-    result = task + "()"
-    goto = "{}".format(context['id'])
-    return jsonify(result=result, goto=goto)
+
+    return jsonify({"Error": "Wrong Task"})
 
 
 @app.route("/result/server/<task>/<task_id>")
@@ -190,14 +185,14 @@ def server_web_result(task, task_id):
         from server import monitor_services
         retval = monitor_services.AsyncResult(task_id).get(timeout=1.0)
         return repr(retval)
-    elif task == 'monitor_techatnyu_org':
+
+    if task == 'monitor_techatnyu_org':
         from server import monitor_techatnyu_org
         retval = monitor_techatnyu_org.AsyncResult(
             task_id).get(timeout=1.0)
         return repr(retval)
-    else:
-        return jsonify({"Error": "Wrong Task"})
-    return jsonify({"Error": "Wrong taskID"})
+
+    return jsonify({"Error": "Wrong Task ID"})
 
 
 @app.route("/task/backup/<task>")
@@ -210,19 +205,18 @@ def backup_web(task):
         from backup import backup_mongo
         res = backup_mongo.apply_async([])
         result = "backup_mongo()"
-    elif task == 'backup_jira':
+
+    if task == 'backup_jira':
         from backup import backup_jira
         res = backup_jira.apply_async([])
         result = "backup_jira()"
-    elif task == 'backup_discuss':
+
+    if task == 'backup_discuss':
         from backup import backup_discuss
         res = backup_discuss.apply_async([])
         result = "backup_discuss()"
-    else:
-        return jsonify({"Error": "Wrong Task"})
-    context = {"id": res.task_id}
-    goto = "{}".format(context['id'])
-    return jsonify(result=result, goto=goto)
+
+    return jsonify({"Error": "Wrong Task"})
 
 
 @app.route("/result/backup/<task>/<task_id>")
@@ -235,17 +229,18 @@ def backup_web_result(task, task_id):
         from backup import backup_mongo
         retval = backup_mongo.AsyncResult(task_id).get(timeout=1.0)
         return repr(retval)
-    elif task == 'backup_jira':
+
+    if task == 'backup_jira':
         from backup import backup_jira
         retval = backup_jira.AsyncResult(task_id).get(timeout=1.0)
         return repr(retval)
-    elif task == 'backup_discuss':
+
+    if task == 'backup_discuss':
         from backup import backup_discuss
         retval = backup_discuss.AsyncResult(task_id).get(timeout=1.0)
         return repr(retval)
-    else:
-        return jsonify({"Error": "Wrong Task"})
-    return jsonify({"Error": "Wrong taskID"})
+
+    return jsonify({"Error": "Wrong Task"})
 
 celery = make_celery(app)
 
