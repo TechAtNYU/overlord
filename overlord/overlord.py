@@ -65,8 +65,7 @@ def get_JSON(userId):
         return jsonify({'status': '401'})
 
     # Authentication is successful
-    personData = person.json()
-    if len(personData['data']['attributes']['roles']) > 0:
+    if len(person.json()['data']['attributes']['roles']) > 0:
         # Throws a JSON object that contains all of the tasks that
         # the users can run.
         return jsonify({
