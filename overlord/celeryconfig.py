@@ -44,7 +44,7 @@ CELERYBEAT_SCHEDULE = {
     'every-hour-startup-week': {
         'task': 'static.trigger_build',
         'schedule': crontab(minute='*/45'),
-        'args': ('startup-week', 'master'),
+        'args': ('startup-week', 'v2'),
     },
     'every-hour-ship': {
         'task': 'static.trigger_build',
