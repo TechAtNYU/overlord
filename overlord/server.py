@@ -1,22 +1,20 @@
 import os
 import spur
 import httplib
-import platform
-import time
+
 from overlord import celery
 from urlparse import urlparse
-from datetime import datetime, timedelta
-
 
 def check_uptime(site):
+    """
+    Simple script to perform HTTP requests to any URL and see if it
+    throws an exception when we do a HEAD request.
+    """
     url = urlparse(site)
-    error = ""
     try:
         conn = httplib.HTTPConnection(url[1])
         # Use a HEAD request to get the status code
         conn.request("HEAD", url[2])
-        status = conn.getresponse()
-        error = status.status
         return True
     except:
         return False
@@ -24,7 +22,11 @@ def check_uptime(site):
 
 @celery.task
 def monitor_services():
-    # Restarts services.tnyu.org if it goes down
+    """
+    Does an SSH into the services server and restarts the server if it seems
+    that it is down. Useful since it catches most bugs:
+    Restarts services.tnyu.org if it goes down.
+    """
     result = check_uptime(os.environ['TNYU_Services_SERVER_Address'])
     if not result:
         # if services is down we have to restart it
@@ -44,13 +46,17 @@ def monitor_services():
                                cwd="/root/proxy", allow_error=True)
         if result.return_code > 4:
             return False
-        return True
+
     return True
 
 
 @celery.task
 def monitor_techatnyu_org():
-    # Restarts techatnyu.org if it goes down
+    """
+    Does an SSH into the API server and restarts the server if it seems that
+    it is down. Useful since it catches most bugs:
+    # Restarts techatnyu.org if it goes down.
+    """
     result = check_uptime(os.environ['TNYU_Org_Website_SERVER_Address'])
     if not result:
         # if services is down we have to restart it
@@ -64,8 +70,9 @@ def monitor_techatnyu_org():
             shell.run(["forever", "stopall"],
                       cwd="/var/apps/tech-nyu-site", allow_error=True)
             result = shell.run(["forever", "start", "server.js"],
-                               cwd="/var/apps/tech-nyu-site/build", allow_error=True)
+                               cwd="/var/apps/tech-nyu-site/build",
+                               allow_error=True)
         if result.return_code > 4:
             return False
-        return True
+
     return True
