@@ -31,22 +31,22 @@ CELERYBEAT_SCHEDULE = {
         'schedule': crontab(minute=45, hour=2),
         'args': (),
     },
-    'every-hour-intranet': {
+    'every-fourty-five-minutes-intranet': {
         'task': 'static.trigger_build',
         'schedule': crontab(minute='*/45'),
         'args': ('intranet', 'master'),
     },
-    'every-hour-intranet-develop': {
+    'every-fourty-five-minutes-intranet-develop': {
         'task': 'static.trigger_build',
         'schedule': crontab(minute='*/45'),
         'args': ('intranet', 'develop'),
     },
-    'every-hour-startup-week': {
+    'every-fourty-five-minutes-startup-week': {
         'task': 'static.trigger_build',
         'schedule': crontab(minute='*/45'),
         'args': ('startup-week', 'v2'),
     },
-    'every-hour-ship': {
+    'every-fourty-five-minutes-ship': {
         'task': 'static.trigger_build',
         'schedule': crontab(minute='*/45'),
         'args': ('ship', 'master'),
@@ -56,17 +56,17 @@ CELERYBEAT_SCHEDULE = {
         'schedule': crontab(minute='*/15'),
         'args': ('calendar-service', 'master'),
     },
-    'every-fifteen-minutes-job-board': {
+    'every-fourty-five-minutes-job-board': {
         'task': 'static.trigger_build',
         'schedule': crontab(minute='*/15'),
         'args': ('job-board', 'v3'),
     },
-    'every-day-monitor-services': {
+    'every-fourty-five-minutes-monitor-services': {
         'task': 'server.monitor_services',
         'schedule': crontab(minute='*/45'),
         'args': (),
     },
-    'every-day-monitor-tnyu-site': {
+    'every-fourty-five-minutes-monitor-tnyu-site': {
         'task': 'server.monitor_techatnyu_org',
         'schedule': crontab(minute='*/45'),
         'args': (),
