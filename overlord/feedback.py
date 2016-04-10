@@ -54,7 +54,7 @@ def get_emails(event_id, event_data, eboard_members, attendees):
 def generate_emails(event_data, survey_link, eboard_members, attendees):
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
-    server.login(os.environ['tnyu_email'], os.environ['tnyu_email_password'])
+    server.login(os.environ['TNYU_EMAIL'], os.environ['TNYU_EMAIL_PASSWORD'])
 
     for i, member in enumerate(eboard_members):
         msg = "\r\n".join([
@@ -76,14 +76,14 @@ def generate_emails(event_data, survey_link, eboard_members, attendees):
         ])
 
         try:
-            server.sendmail(os.environ['tnyu_email'], eboard_members[i][
+            server.sendmail(os.environ['TNYU_EMAIL'], eboard_members[i][
                             'attributes']['contact']['email'], msg)
         except UnicodeEncodeError:
             continue
 
     for i, attendee in enumerate(attendees):
         msg = "\r\n".join([
-            "From: " + os.environ['tnyu_email'],
+            "From: " + os.environ['TNYU_EMAIL'],
             "To: " + attendees[j]['attributes']['contact']['email'],
             "Subject: Thank you for coming to Tech@NYU's " +
             event_data[0]['attributes']['title'],
@@ -106,7 +106,7 @@ def generate_emails(event_data, survey_link, eboard_members, attendees):
         ])
 
         try:
-            server.sendmail(os.environ['tnyu_email'], attendees[j][
+            server.sendmail(os.environ['TNYU_EMAIL'], attendees[j][
                             'attributes']['contact']['email'], msg)
         except UnicodeEncodeError:
             continue
