@@ -44,7 +44,7 @@ class FeedBackEmail(object):
         self.server = smtplib.SMTP('smtp.gmail.com', 587)
         self.server.starttls()
         self.server.login(
-            os.environ['tnyu_email'], os.environ['tnyu_email_password'])
+            os.environ['TNYU_EMAIL'], os.environ['TNYU_EMAIL_PASSWORD'])
 
     def _get_emails(self, event_id):
         res = requests.get('https://api.tnyu.org/v3/events/' + event_id +
@@ -67,7 +67,7 @@ class FeedBackEmail(object):
     def _generate_emails(self, members):
         for i, member in enumerate(members):
             msg = "\r\n".join([
-                "From: " + os.environ['tnyu_email'],
+                "From: " + os.environ['TNYU_EMAIL'],
                 "To: " + members[i]['attributes']['contact']['email'],
                 "Subject: Thank you for coming to Tech@NYU's " +
                 self.event_data[0]['attributes']['title'],
@@ -90,7 +90,7 @@ class FeedBackEmail(object):
             ])
 
             try:
-                self.server.sendmail(os.environ['tnyu_email'], members[i][
+                self.server.sendmail(os.environ['TNYU_EMAIL'], members[i][
                     'attributes']['contact']['email'], msg)
             except UnicodeEncodeError:
                 continue
