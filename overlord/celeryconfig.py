@@ -31,6 +31,11 @@ CELERYBEAT_SCHEDULE = {
         'schedule': crontab(minute=45, hour=2),
         'args': (),
     },
+    'every-day-feedback': {
+        'task': 'feedback.send_emails',
+        'schedule': crontab(minute=0, hour=9),
+        'args': ()
+    },
     'every-fourty-five-minutes-intranet': {
         'task': 'static.trigger_build',
         'schedule': crontab(minute='*/45'),
