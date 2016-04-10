@@ -10,9 +10,14 @@ Overlord now runs:
   - Jira (built-in)
   - Discuss (Postgres)
   - Slack conversations daily
+
 - Monitoring and restarting (server.py):
   - techatnyu.org
   - services.tnyu.org
+
+- Feedback
+  - Send feedback forms for events after they end.
+
 - Rebuilding static front-end for (static.py):
   - intranet
   - intranet-staging
