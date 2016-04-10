@@ -58,6 +58,11 @@ def generate_emails(event_data, survey_link, eboard_members, attendees):
 
     for i, member in enumerate(eboard_members):
         msg = "\r\n".join([
+            "From: " + os.environ['TNYU_EMAIL'],
+            "To: " + eboard_members[i]['attributes']['contact']['email'],
+            "Subject: Thank you for coming to Tech@NYU's " +
+            event_data[0]['attributes']['title'],
+            '',
             'Hi ' + eboard_members[i]['attributes']['name'] + '!\n\n' +
             'Thanks for coming out! We are constantly looking to improve ' +
             'on our events, and we would really appreciate it if you ' +
