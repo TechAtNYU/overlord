@@ -32,91 +32,76 @@ class Event(object):
         return self.title.encode('utf-8')
 
 
-def get_emails(event_id, event_data, eboard_members, attendees):
-    res = requests.get('https://api.tnyu.org/v3/events/' + event_id +
-                       '?include=attendees', headers=headers, verify=False)
+class FeedBackEmail(object):
 
-    if res.status_code != 200:
-        return
+    def __init__(self, survey_link):
+        self.survey_link = survey_link
 
-    r = res.json()
+        self.eboard_members = []
+        self.attendees = []
+        self.event_data = []
 
-    event_data.append(r['data'])
+        self.server = smtplib.SMTP('smtp.gmail.com', 587)
+        self.server.starttls()
+        self.server.login(
+            os.environ['tnyu_email'], os.environ['tnyu_email_password'])
 
-    for post in r['included']:
-        if post['attributes'].get('contact'):
-            if post['attributes']['roles']:
-                eboard_members.append(post)
-            else:
-                attendees.append(post)
+    def _get_emails(self, event_id):
+        res = requests.get('https://api.tnyu.org/v3/events/' + event_id +
+                           '?include=attendees', headers=headers, verify=False)
 
+        if res.status_code != 200:
+            return
 
-def generate_emails(event_data, survey_link, eboard_members, attendees):
-    server = smtplib.SMTP('smtp.gmail.com', 587)
-    server.starttls()
-    server.login(os.environ['TNYU_EMAIL'], os.environ['TNYU_EMAIL_PASSWORD'])
+        r = res.json()
 
-    for i, member in enumerate(eboard_members):
-        msg = "\r\n".join([
-            "From: " + os.environ['TNYU_EMAIL'],
-            "To: " + eboard_members[i]['attributes']['contact']['email'],
-            "Subject: Thank you for coming to Tech@NYU's " +
-            event_data[0]['attributes']['title'],
-            '',
-            'Hi ' + eboard_members[i]['attributes']['name'] + '!\n\n' +
-            'Thanks for coming out! We are constantly looking to improve ' +
-            'on our events, and we would really appreciate it if you ' +
-            'could take two minutes out of your day to fill out our' +
-            'feedback form. We\'d love to know how we could do better: ' +
-            survey_link + '?rsvpId=' + eboard_members[i]['id'],
-            '',
-            'Filling the form out will give us an idea of how everything ' +
-            'went and if there was something you really liked about the ' +
-            'event or something you did not like.\n',
-            'Feel free to email feedback@techatnyu.org if you have ' +
-            'other questions or concerns.',
-            '',
-            'Thank you,',
-            'Tech@NYU team'
-        ])
+        self.event_data.append(r['data'])
 
-        try:
-            server.sendmail(os.environ['TNYU_EMAIL'], eboard_members[i][
-                            'attributes']['contact']['email'], msg)
-        except UnicodeEncodeError:
-            continue
+        for post in r['included']:
+            if post['attributes'].get('contact'):
+                if post['attributes']['roles']:
+                    self.eboard_members.append(post)
+                else:
+                    self.attendees.append(post)
 
-    for i, attendee in enumerate(attendees):
-        msg = "\r\n".join([
-            "From: " + os.environ['TNYU_EMAIL'],
-            "To: " + attendees[j]['attributes']['contact']['email'],
-            "Subject: Thank you for coming to Tech@NYU's " +
-            event_data[0]['attributes']['title'],
-            '',
-            'Hi ' + attendees[j]['attributes']['name'] + '!\n\n' +
-            'Thanks for coming out! We are constantly looking to improve ' +
-            'on our events, and we would really appreciate it if you could ' +
-            ' take two minutes out of your day to fill out our feedback ' +
-            'form. We\'d love to know how we could do better: ' +
-            survey_link + '?rsvpId=' + attendees[j]['id'],
-            '',
-            'Filling the form out will give us an idea of how everything ' +
-            'went and if there was something you really liked about the ' +
-            'event or something you did not like.\n',
-            'Feel free to email feedback@techatnyu.org if you have other ' +
-            'questions or concerns.',
-            '',
-            'Thank you,',
-            'Tech@NYU team'
-        ])
+    def _generate_emails(self, members):
+        for i, member in enumerate(members):
+            msg = "\r\n".join([
+                "From: " + os.environ['tnyu_email'],
+                "To: " + members[i]['attributes']['contact']['email'],
+                "Subject: Thank you for coming to Tech@NYU's " +
+                self.event_data[0]['attributes']['title'],
+                '',
+                'Hi ' + members[i]['attributes']['name'] + '!\n\n' +
+                'Thanks for coming out! We are constantly looking to improve ' +
+                'on our events, and we would really appreciate it if you ' +
+                'could take two minutes out of your day to fill out our' +
+                'feedback form. We\'d love to know how we could do better: ' +
+                self.survey_link + '?rsvpId=' + members[i]['id'],
+                '',
+                'Filling the form out will give us an idea of how everything ' +
+                'went and if there was something you really liked about the ' +
+                'event or something you did not like.\n',
+                'Feel free to email feedback@techatnyu.org if you have ' +
+                'other questions or concerns.',
+                '',
+                'Thank you,',
+                'Tech@NYU team'
+            ])
 
-        try:
-            server.sendmail(os.environ['TNYU_EMAIL'], attendees[j][
-                            'attributes']['contact']['email'], msg)
-        except UnicodeEncodeError:
-            continue
+            try:
+                self.server.sendmail(os.environ['tnyu_email'], members[i][
+                    'attributes']['contact']['email'], msg)
+            except UnicodeEncodeError:
+                continue
 
-    server.quit()
+    def send_emails(self, event_id):
+        self._get_emails(event_id)
+        self._generate_emails(self.eboard_members)
+        self._generate_emails(self.attendees)
+
+    def __del__(self):
+        self.server.quit()
 
 
 def get_resource():
@@ -135,9 +120,11 @@ def get_events_ended_today():
     for event in events:
         event_date = parse(event.endDateTime).date()
 
+        # Break the loop if an event in the past is detected
         if event_date < today:
             break
 
+        # Check if an event ended today
         if event_date == today:
             today_events.append(event)
 
@@ -146,10 +133,8 @@ def get_events_ended_today():
 
 @celery.task
 def send_emails():
+    survey_link = 'https://techatnyu.typeform.com/to/ElE6F5'
+    emails = FeedbackEmail(survey_link)
+
     for event in get_events_ended_today():
-        eboard_members = []
-        attendees = []
-        event_data = []
-        survey_link = 'https://techatnyu.typeform.com/to/ElE6F5'
-        get_emails(event.id, event_data, eboard_members, attendees)
-        generate_emails(event_data, survey_link, eboard_members, attendees)
+        emails.send_emails(event.id)
