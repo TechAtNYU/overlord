@@ -33,7 +33,7 @@ CELERYBEAT_SCHEDULE = {
     },
     'every-day-feedback': {
         'task': 'feedback.send_emails',
-        'schedule': crontab(minute=0, hour=9),
+        'schedule': crontab(minute=0, hour=23),
         'args': ()
     },
     'every-fourty-five-minutes-intranet': {
