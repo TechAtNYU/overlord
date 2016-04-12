@@ -117,7 +117,7 @@ def get_events_ended_today():
 @celery.task
 def send_emails():
     survey_link = 'https://techatnyu.typeform.com/to/ElE6F5'
-    emails = FeedbackEmail(survey_link)
+    emails = FeedBackEmail(survey_link)
 
     for event in get_events_ended_today():
         emails.send_emails(event.id)
