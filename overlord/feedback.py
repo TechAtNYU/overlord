@@ -118,6 +118,9 @@ def get_events_ended_today():
 def send_emails():
     survey_link = 'https://techatnyu.typeform.com/to/ElE6F5'
     emails = FeedBackEmail(survey_link)
+    events = get_events_ended_today()
 
-    for event in get_events_ended_today():
+    for event in events:
         emails.send_emails(event.id)
+
+    return events
