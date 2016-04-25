@@ -123,4 +123,4 @@ def send_emails():
     for event in events:
         emails.send_emails(event.id)
 
-    return events
+    return True
