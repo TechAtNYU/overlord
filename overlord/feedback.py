@@ -1,4 +1,3 @@
-import smtplib
 import os
 import requests
 
@@ -8,46 +7,14 @@ from pytz import timezone
 
 from threading import Thread
 from overlord import celery
-from utils import Event
-
-headers = {
-    'content-type': 'application/vnd.api+json',
-    'accept': 'application/*, text/*',
-    'authorization': 'Bearer ' + os.environ['TNYU_API_KEY']
-}
+from utils import Event, Email, headers
 
 
-class FeedBackEmail(object):
+class FeedBackEmail(Email):
 
     def __init__(self, survey_link):
+        super(FeedBackEmail, self).__init__()
         self.survey_link = survey_link
-
-        self.eboard_members = []
-        self.attendees = []
-        self.event_data = []
-
-        self.server = smtplib.SMTP('smtp.gmail.com', 587)
-        self.server.starttls()
-        self.server.login(
-            os.environ['TNYU_EMAIL'], os.environ['TNYU_EMAIL_PASSWORD'])
-
-    def _get_emails(self, event_id):
-        res = requests.get('https://api.tnyu.org/v3/events/' + event_id +
-                           '?include=attendees', headers=headers, verify=False)
-
-        if res.status_code != 200:
-            return
-
-        r = res.json()
-
-        self.event_data.append(r['data'])
-
-        for post in r['included']:
-            if post['attributes'].get('contact'):
-                if post['attributes']['roles']:
-                    self.eboard_members.append(post)
-                else:
-                    self.attendees.append(post)
 
     def _generate_emails(self, members):
         for i, member in enumerate(members):
@@ -84,9 +51,6 @@ class FeedBackEmail(object):
         self._get_emails(event_id)
         self._generate_emails(self.eboard_members)
         self._generate_emails(self.attendees)
-
-    def __del__(self):
-        self.server.quit()
 
 
 def get_resource():
