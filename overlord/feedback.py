@@ -4,6 +4,7 @@ import requests
 
 from datetime import datetime
 from dateutil.parser import parse
+from pytz import timezone
 
 from threading import Thread
 from overlord import celery
@@ -97,8 +98,9 @@ def get_resource():
 def get_events_ended_today():
     resources = get_resource()['data']
     events = [Event(x) for x in resources]
-    today = datetime.today().date()
 
+    # Change timezone to UTC
+    today = timezone("America/New_York").localize(datetime.today()).date()
     today_events = []
 
     for event in events:
