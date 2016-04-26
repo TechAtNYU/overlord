@@ -5,6 +5,7 @@ import requests
 from datetime import datetime
 from dateutil.parser import parse
 
+from threading import Thread
 from overlord import celery
 from utils import Event
 
@@ -121,6 +122,7 @@ def send_emails():
     events = get_events_ended_today()
 
     for event in events:
-        emails.send_emails(event.id)
+        thr = Thread(target=emails.send_emails, args=[event.id])
+        thr.start()
 
     return True
