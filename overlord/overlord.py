@@ -20,7 +20,7 @@ def make_celery(app):
         'overlord',
         broker='amqp://guest:guest@localhost//',
         backend='amqp',
-        include=["backup", "server", "static", "feedback"],
+        include=["backup", "server", "static", "feedback", "reminder"],
     )
     celery.conf.update(app.config)
     TaskBase = celery.Task
