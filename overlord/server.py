@@ -63,7 +63,7 @@ def monitor_techatnyu_org():
         shell = spur.SshShell(
             hostname=os.environ['TNYU_Org_Website_SERVER_IP'],
             username=os.environ['TNYU_Org_Website_SERVER_USER'],
-            password=os.environ['TNYU_Org_Website_SERVER_PASSWORD'],
+            private_key_file="/home/api/.ssh/id_rsa",
             missing_host_key=spur.ssh.MissingHostKey.accept,
         )
         with shell:
