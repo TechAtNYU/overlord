@@ -18,7 +18,7 @@ def backup_mongo():
         missing_host_key=spur.ssh.MissingHostKey.accept,
     )
     with shell:
-        api_dir = "/backup"
+        api_dir = "/backup/api-db-backups"
         shell.run(["rm", "-rf", "dump"], cwd=api_dir, allow_error=True)
         shell.run(["mkdir", "dump"], cwd=api_dir, allow_error=True)
         shell.run(["mongodump", "-h", "localhost", "-o", "dump", "-u",
