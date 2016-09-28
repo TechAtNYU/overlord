@@ -9,12 +9,69 @@ from threading import Thread
 from overlord import celery
 from utils import Event, Email, headers
 
+typeform_json = """
+    {
+      "title": "Tech @ NYU Feedback",
+      "tags": ["feedback"],
+      "webhook_submit_url": "http://overlord.tnyu.org/typeform_webhook",
+      "fields": [
+        {
+          "type": "short_text",
+          "question": "Hey, what's your name?"
+        },
+        {
+          "type": "short_text",
+          "question": "Your email id?"
+        },
+        {
+          "type": "rating",
+          "question": "Overall, how satisfied were you with the event?",
+          "description": "Be honest, we will not cry, we promise!"
+        },
+        {
+          "type": "rating",
+          "question": "How would you rate the speaker?"
+        },
+        {
+          "type": "rating",
+          "question": "How would you rate the material?"
+        },
+        {
+          "type": "rating",
+          "question": "How satisfied were you with the hosts running the event?"
+        },
+        {
+          "type": "rating",
+          "question": "Overall, how satisfied were you with the event?",
+          "description": "Be honest, we will not cry, we promise!"
+        },
+        {
+          "type": "opinion_scale",
+          "question": "How likely is it that you would recommend it to a friend or colleague?",
+          "labels": {
+            "left": "It sucked!",
+            "center": "Who cares",
+            "right": "I love it"
+          }
+        },
+        {
+          "type": "opinion_scale",
+          "question": "How likely are you to attend another one of our events?",
+          "labels": {
+            "left": "Not at all likely",
+            "right": "Extremely likely"
+          }
+        }
+      ]
+    }
+"""
+
 
 class FeedBackEmail(Email):
 
-    def __init__(self, survey_link):
+    def __init__(self, survey_link_json):
         super(FeedBackEmail, self).__init__()
-        self.survey_link = survey_link
+        self.survey_link_json = survey_link_json
 
     def _generate_emails(self, members):
         for i, member in enumerate(members):
@@ -29,7 +86,7 @@ class FeedBackEmail(Email):
                 'on our events, and we would really appreciate it if you ' +
                 'could take two minutes out of your day to fill out our' +
                 'feedback form. We\'d love to know how we could do better: ' +
-                self.survey_link + '?rsvpId=' + members[i]['id'],
+                self.typeform_link(),
                 '',
                 'Filling the form out will give us an idea of how everything ' +
                 'went and if there was something you really liked about the ' +
@@ -46,6 +103,12 @@ class FeedBackEmail(Email):
                     'attributes']['contact']['email'], msg)
             except UnicodeEncodeError:
                 continue
+
+    def typeform_link(self):
+        res = requests.post('https://api.typeform.io/v0.4/forms', data=self.survey_link_json,
+                            headers={"X-API-TOKEN": os.environ['TYPEFORM_NEW_API_TOKEN']})
+
+        return res.json()['_links'][1]['href']
 
     def send_emails(self, event_id):
         self._get_emails(event_id)
@@ -83,8 +146,7 @@ def get_events_ended_today():
 
 @celery.task
 def send_emails():
-    survey_link = 'https://techatnyu.typeform.com/to/ElE6F5'
-    emails = FeedBackEmail(survey_link)
+    emails = FeedBackEmail(typeform_json)
     events = get_events_ended_today()
 
     for event in events:
