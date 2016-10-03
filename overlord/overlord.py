@@ -2,10 +2,12 @@ from __future__ import absolute_import
 import os
 import requests
 import celeryconfig
+import json
 from os import path, environ
 
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request
 from celery import Celery
+from utils import map_answers
 
 app = Flask(__name__)
 app.config.from_object(celeryconfig)
@@ -241,6 +243,19 @@ def backup_web_result(task, task_id):
 
     return jsonify({"Error": "Wrong Task"})
 
+
+@app.route('/typeform_webhook', methods=['POST'])
+def typeform():
+    """
+    Webhook for typeform feedback form.
+    """
+    json_res = json.loads(request.data)
+    res = requests.get('https://api.typeform.io/v0.4/forms/jM87mkTPhb', headers=headers)
+    form_schema = res.json()
+
+    print map_answers(json_res, form_schema)
+
+    return jsonify({"Status": "Success"})
 
 @app.errorhandler(404)
 def error(e):
