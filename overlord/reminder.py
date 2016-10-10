@@ -22,6 +22,24 @@ class ReminderEmail(Email):
         central_time = time.astimezone(tz.gettz('America/New_York'))
         return ":".join(str(central_time.time()).split(":")[0:2])
 
+    def _get_emails(self, event_id):
+        res = requests.get('https://api.tnyu.org/v3/events/' + event_id +
+                           '?include=rsvps', headers=headers, verify=False)
+
+        if res.status_code != 200:
+            return
+
+        r = res.json()
+
+        self.event_data.append(r['data'])
+
+        for post in r['included']:
+            if post['attributes'].get('contact'):
+                if post['attributes']['roles']:
+                    self.eboard_members.append(post)
+                else:
+                    self.attendees.append(post)
+
     def _venue_address(self):
         venue_id = self.event_data[0]['relationships'][
             'venue']['data']['id']
@@ -79,11 +97,12 @@ def get_events_in_future():
     future_events = []
 
     for event in events:
-        event_date = parse(event.startDateTime).date()
-        # Check if the event is tomorrow
-        if abs(event_date - today).days == 1:
-            future_events.append(event)
-
+        startDateTime = getattr(event, 'startDateTime', None)
+        if startDateTime:
+            event_date = parse(event.startDateTime).replace(tzinfo=tz.gettz('UTC')).astimezone(tz.gettz('America/New_York')).date()
+            # Check if the event is tomorrow
+            if (event_date - today).days == 1:
+                future_events.append(event)
     return future_events
 
 
@@ -95,4 +114,4 @@ def send_emails():
         thr = Thread(target=emails.send_emails, args=[event.id])
         thr.start()
 
-    return True
+    return len(events)
