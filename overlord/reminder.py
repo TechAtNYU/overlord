@@ -114,4 +114,4 @@ def send_emails():
         thr = Thread(target=emails.send_emails, args=[event.id])
         thr.start()
 
-    return True
+    return len(events)
