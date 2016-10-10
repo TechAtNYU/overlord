@@ -99,11 +99,10 @@ def get_events_in_future():
     for event in events:
         startDateTime = getattr(event, 'startDateTime', None)
         if startDateTime:
-            event_date = parse(event.startDateTime).date()
+            event_date = parse(event.startDateTime).replace(tzinfo=tz.gettz('UTC')).astimezone(tz.gettz('America/New_York')).date()
             # Check if the event is tomorrow
-            if abs(event_date - today).days == 1:
+            if (event_date - today).days == 1:
                 future_events.append(event)
-
     return future_events
 
 
