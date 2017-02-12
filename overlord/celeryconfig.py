@@ -31,6 +31,11 @@ CELERYBEAT_SCHEDULE = {
         'schedule': crontab(minute=45, hour=2),
         'args': (),
     },
+    'every-thirty-minutes-event-attendance': {
+        'task': 'orgsyncattendance.send_emails',
+        'schedule': crontab(minute='*/30'),
+        'args': ()
+    },
     'every-day-feedback': {
         'task': 'feedback.send_emails',
         'schedule': crontab(minute=0, hour=23),
