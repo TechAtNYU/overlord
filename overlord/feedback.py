@@ -45,7 +45,7 @@ class FeedBackEmail(Email):
 
     @property
     def typeform_link(self):
-        return "https://forms.typeform.io/to/JEtbe4vSqP"
+        return "https://techatnyu.typeform.com/to/hEHu5Z"
 
     def send_emails(self, event_id):
         self._get_emails(event_id)
