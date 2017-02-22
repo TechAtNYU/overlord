@@ -31,6 +31,11 @@ CELERYBEAT_SCHEDULE = {
         'schedule': crontab(minute=45, hour=2),
         'args': (),
     },
+    'every-day-mailtrain': {
+        'task': 'backup.backup_mailtrain_sql',
+        'schedule': crontab(minute=30, hour=3),
+        'args': (),
+    },
     'every-thirty-minutes-event-attendance': {
         'task': 'orgsyncattendance.send_emails',
         'schedule': crontab(minute='*/30'),

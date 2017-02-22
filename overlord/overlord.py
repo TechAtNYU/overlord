@@ -118,6 +118,12 @@ def get_JSON(userId):
                     'parameters': [],
                     'path': '/task/backup/backup_discuss',
                     'result': '/result/backup/backup_discuss/<task_id>',
+                },
+                {
+                    'name': 'backup_maltrain_mysql',
+                    'parameters': [],
+                    'path': '/task/backup/backup_mailtrain_sql',
+                    'result': '/result/backup/backup_mailtrain_sql/<task_id>',
                 }
             ]
         })
@@ -217,6 +223,11 @@ def backup_web(task):
         res = backup_discuss.apply_async([])
         result = "backup_discuss()"
 
+    if task == 'backup_mailtrain_sql':
+        from backup import backup_mailtrain_sql
+        res = backup_mailtrain_sql.apply_async([])
+        result = "backup_mailtrain_sql()"
+
     return jsonify({"Error": "Wrong Task"})
 
 
@@ -239,6 +250,11 @@ def backup_web_result(task, task_id):
     if task == 'backup_discuss':
         from backup import backup_discuss
         retval = backup_discuss.AsyncResult(task_id).get(timeout=1.0)
+        return repr(retval)
+        
+    if task == 'backup_mailtrain_sql':
+        from backup import backup_mailtrain_sql
+        retval = backup_mailtrain_sql.AsyncResult(task_id).get(timeout=1.0)
         return repr(retval)
 
     return jsonify({"Error": "Wrong Task"})
