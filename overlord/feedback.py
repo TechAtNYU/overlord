@@ -15,7 +15,7 @@ class FeedBackEmail(Email):
     def _generate_emails(self, members):
         for i, member in enumerate(members):
             msg = "\r\n".join([
-                "From: " + os.environ['TNYU_EMAIL'],
+                "From: Tech@NYU Feedback <" + os.environ['TNYU_EMAIL'] + ">",
                 "To: " + members[i]['attributes']['contact']['email'],
                 "Subject: Thank you for coming to Tech@NYU's " +
                 self.event_data[0]['attributes']['title'],
@@ -23,7 +23,7 @@ class FeedBackEmail(Email):
                 'Hi ' + members[i]['attributes']['name'] + '!\n\n' +
                 'Thanks for coming out! We are constantly looking to improve ' +
                 'on our events, and we would really appreciate it if you ' +
-                'could take two minutes out of your day to fill out our' +
+                'could take two minutes out of your day to fill out our ' +
                 'feedback form. We\'d love to know how we could do better: ' +
                 self.typeform_link,
                 '',
@@ -45,7 +45,7 @@ class FeedBackEmail(Email):
 
     @property
     def typeform_link(self):
-        return "https://forms.typeform.io/to/JEtbe4vSqP"
+        return "https://techatnyu.typeform.com/to/hEHu5Z"
 
     def send_emails(self, event_id):
         self._get_emails(event_id)

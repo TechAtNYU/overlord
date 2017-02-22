@@ -10,6 +10,9 @@ from threading import Thread
 from overlord import celery
 from utils import Event, Email, headers
 
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 
 class ReminderEmail(Email):
 
@@ -54,26 +57,47 @@ class ReminderEmail(Email):
         time = self._get_time()
 
         for i, member in enumerate(members):
-            msg = "\r\n".join([
-                "From: " + os.environ['TNYU_EMAIL'],
-                "To: " + members[i]['attributes']['contact']['email'],
-                "Subject: Confirmation for Tech@NYU's " +
-                self.event_data[0]['attributes']['title'],
-                '',
-                'Hi ' + members[i]['attributes']['name'] + '!\n\n' +
+            msg = MIMEMultipart('alternative')
+            msg['Subject'] = "Confirmation for Tech@NYU's " + self.event_data[0]['attributes']['title']
+            msg['From'] = "Tech@NYU Feedback <" + os.environ['TNYU_EMAIL'] +">"
+            msg['To'] = members[i]['attributes']['contact']['email']
+
+            text = ("Hi " + members[i]['attributes']['name'] + "!\n\n" +
                 "This is your confirmation for the Tech@NYU " +
                 self.event_data[0]['attributes']['title'] + " tomorrow at " +
-                time + " .The event will be held at: \n\n" + address +
+                time + ". The event will be held at: \n\n" + address +
                 "\n\nWe look forward to seeing you! Feel free to reach out" +
                 " to us if you have any other questions. For more updates" +
                 " feel free to follow us on Twitter or Facebook. \n\n" +
-                "Thank you",
-                "Tech@NYU team"
-            ])
+                "Thank you")
+
+            address_str = ''
+            for item in address.split('\n'):
+                address_str += item.strip() + "<br>"
+            html = (
+                "<html>" +
+                "<head></head>" +
+                "<body>" +
+                "<p>Hi " + members[i]['attributes']['name'] + "!</p>" +
+                "<p>This is your confirmation for the Tech@NYU " +
+                self.event_data[0]['attributes']['title'] + " tomorrow at " +
+                time + ". The event will be held at:</p>" +
+                "<p>" + address_str + "</p>" +
+                "<p>We look forward to seeing you! Feel free to reach out " +
+                "to us if you have any other questions. For more updates " +
+                "feel free to follow us on <a href='https://twitter.com/techatnyu'>Twitter</a> or <a href='https://www.facebook.com/TechatNYU/'>Facebook</a>.</p>"+
+                "<p>Thank you</p>"
+                "</body>" +
+                "</html>")
+
+            part1 = MIMEText(text, 'plain')
+            part2 = MIMEText(html, 'html')
+            msg.attach(part1)
+            msg.attach(part2)
 
             try:
                 self.server.sendmail(os.environ['TNYU_EMAIL'], members[i][
-                    'attributes']['contact']['email'], msg)
+                    'attributes']['contact']['email'], msg.as_string())
             except UnicodeEncodeError:
                 continue
 
