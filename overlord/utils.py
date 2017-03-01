@@ -17,6 +17,7 @@ class Event(object):
 
     def __init__(self, json_obj):
         self.id = json_obj['id']
+        self.raw_json = json_obj
         self._attributes = json_obj['attributes']
 
     def __getattr__(self, attr):

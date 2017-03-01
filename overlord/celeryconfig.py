@@ -11,21 +11,11 @@ CELERYBEAT_SCHEDULE = {
         'schedule': crontab(minute=0, hour=0),
         'args': (),
     },
-   # 'every-day-bd': {
-    #    'task': 'backup.backup_bd_mysql',
-    #    'schedule': crontab(minute=30, hour=0),
-    #    'args': (),
-    #},
     'every-day-slack': {
         'task': 'static.trigger_build',
         'schedule': crontab(minute=0, hour=1),
         'args': ('slack-dump', 'master'),
     },
-    #'every-day-jira': {
-    #    'task': 'backup.backup_jira',
-    #    'schedule': crontab(minute=30, hour=2),
-    #    'args': (),
-    #},
     'every-day-discuss': {
         'task': 'backup.backup_discuss',
         'schedule': crontab(minute=45, hour=2),
@@ -43,6 +33,11 @@ CELERYBEAT_SCHEDULE = {
     },
     'every-day-feedback': {
         'task': 'feedback.send_emails',
+        'schedule': crontab(minute=0, hour=23),
+        'args': ()
+    },
+    'every-day-orgsync': {
+        'task': 'orgsync.update_orgsync',
         'schedule': crontab(minute=0, hour=23),
         'args': ()
     },
@@ -81,11 +76,6 @@ CELERYBEAT_SCHEDULE = {
         'schedule': crontab(minute='*/15'),
         'args': ('job-board', 'v3'),
     },
-    #'every-fourty-five-minutes-monitor-services': {
-    #    'task': 'server.monitor_services',
-    #    'schedule': crontab(minute='*/45'),
-    #    'args': (),
-    #},
     'every-fourty-five-minutes-monitor-tnyu-site': {
         'task': 'server.monitor_techatnyu_org',
         'schedule': crontab(minute='*/45'),

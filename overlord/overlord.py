@@ -22,7 +22,7 @@ def make_celery(app):
         'overlord',
         broker='amqp://guest:guest@localhost//',
         backend='amqp',
-        include=["backup", "server", "static", "feedback", "reminder", "orgsyncattendance"],
+        include=["backup", "server", "static", "feedback", "reminder", "orgsyncattendance", 'orgsync'],
     )
     celery.conf.update(app.config)
     TaskBase = celery.Task
@@ -251,7 +251,7 @@ def backup_web_result(task, task_id):
         from backup import backup_discuss
         retval = backup_discuss.AsyncResult(task_id).get(timeout=1.0)
         return repr(retval)
-        
+
     if task == 'backup_mailtrain_sql':
         from backup import backup_mailtrain_sql
         retval = backup_mailtrain_sql.AsyncResult(task_id).get(timeout=1.0)
