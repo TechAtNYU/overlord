@@ -96,8 +96,10 @@ class ReminderEmail(Email):
             msg.attach(part2)
 
             try:
-                self.server.sendmail(os.environ['TNYU_EMAIL'], members[i][
+                err = self.server.sendmail(os.environ['TNYU_EMAIL'], members[i][
                     'attributes']['contact']['email'], msg.as_string())
+                if err:
+                    print(err)
             except UnicodeEncodeError:
                 continue
 

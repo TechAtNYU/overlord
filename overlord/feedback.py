@@ -38,8 +38,10 @@ class FeedBackEmail(Email):
             ])
 
             try:
-                self.server.sendmail(os.environ['TNYU_EMAIL'], members[i][
+                err = self.server.sendmail(os.environ['TNYU_EMAIL'], members[i][
                     'attributes']['contact']['email'], msg)
+                if err:
+                    print(err)
             except UnicodeEncodeError:
                 continue
 
@@ -64,18 +66,19 @@ def get_events_ended_today():
     events = [Event(x) for x in resources]
 
     # Change timezone to UTC
-    today = timezone("America/New_York").localize(datetime.today()).date()
+    today = timezone("America/New_York").localize(datetime.today())
     today_events = []
 
     for event in events:
-        event_date = parse(event.endDateTime).date()
+
+        event_date = parse(event.endDateTime).astimezone(timezone("America/New_York"))
 
         # Break the loop if an event in the past is detected
-        if event_date < today:
+        if event_date.date() < today.date():
             break
 
         # Check if an event ended today
-        if event_date == today:
+        if event_date.date() == today.date() and event_date < today:
             today_events.append(event)
 
     return today_events
