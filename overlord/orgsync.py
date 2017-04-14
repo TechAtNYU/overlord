@@ -38,7 +38,7 @@ def get_events_ended_today():
 
 # Double encode the JSON string
 events_json = json.dumps(get_events_ended_today())
-response = muterun_js('orgsync.js', json.dumps(events_json))
+response = muterun_js('./scripts/orgsync.js', json.dumps(events_json))
 
 @celery.task
 def update_orgsync():
