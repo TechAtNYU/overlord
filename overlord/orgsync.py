@@ -42,7 +42,6 @@ response = muterun_js('./scripts/orgsync.js', json.dumps(events_json))
 
 @celery.task
 def update_orgsync():
-    # TODO: Call's Andrew's JS script here
     if response.exitcode == 0:
       print(response.stdout)
     else:

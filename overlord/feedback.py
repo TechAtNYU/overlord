@@ -15,7 +15,7 @@ class FeedBackEmail(Email):
     def _generate_emails(self, members):
         for i, member in enumerate(members):
             msg = "\r\n".join([
-                "From: " + os.environ['TNYU_EMAIL'],
+                "From: Tech@NYU Feedback <" + os.environ['TNYU_EMAIL'] + ">",
                 "To: " + members[i]['attributes']['contact']['email'],
                 "Subject: Thank you for coming to Tech@NYU's " +
                 self.event_data[0]['attributes']['title'],
@@ -23,7 +23,7 @@ class FeedBackEmail(Email):
                 'Hi ' + members[i]['attributes']['name'] + '!\n\n' +
                 'Thanks for coming out! We are constantly looking to improve ' +
                 'on our events, and we would really appreciate it if you ' +
-                'could take two minutes out of your day to fill out our' +
+                'could take two minutes out of your day to fill out our ' +
                 'feedback form. We\'d love to know how we could do better: ' +
                 self.typeform_link,
                 '',
@@ -38,8 +38,10 @@ class FeedBackEmail(Email):
             ])
 
             try:
-                self.server.sendmail(os.environ['TNYU_EMAIL'], members[i][
+                err = self.server.sendmail(os.environ['TNYU_EMAIL'], members[i][
                     'attributes']['contact']['email'], msg)
+                if err:
+                    print(err)
             except UnicodeEncodeError:
                 continue
 
@@ -64,18 +66,19 @@ def get_events_ended_today():
     events = [Event(x) for x in resources]
 
     # Change timezone to UTC
-    today = timezone("America/New_York").localize(datetime.today()).date()
+    today = timezone("America/New_York").localize(datetime.today())
     today_events = []
 
     for event in events:
-        event_date = parse(event.endDateTime).date()
+
+        event_date = parse(event.endDateTime).astimezone(timezone("America/New_York"))
 
         # Break the loop if an event in the past is detected
-        if event_date < today:
+        if event_date.date() < today.date():
             break
 
         # Check if an event ended today
-        if event_date == today:
+        if event_date.date() == today.date() and event_date < today:
             today_events.append(event)
 
     return today_events
