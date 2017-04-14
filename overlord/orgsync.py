@@ -1,10 +1,11 @@
 import requests
 import json
-
+import sys
 from datetime import datetime
 from dateutil.parser import parse
 from pytz import timezone
 from utils import headers, Event
+from Naked.toolshed.shell import execute_js, muterun_js
 
 from overlord import celery
 
@@ -35,7 +36,15 @@ def get_events_ended_today():
 
     return today_events
 
+# Double encode the JSON string
+events_json = json.dumps(get_events_ended_today())
+response = muterun_js('orgsync.js', json.dumps(events_json))
+
 @celery.task
 def update_orgsync():
     # TODO: Call's Andrew's JS script here
-    print json.dumps(get_events_ended_today())
+    if response.exitcode == 0:
+      print(response.stdout)
+    else:
+      sys.stderr.write(response.stderr)
+
