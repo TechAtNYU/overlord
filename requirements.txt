@@ -22,7 +22,7 @@ itsdangerous==0.24
 Jinja2==2.7.3
 jsonpatch==1.3
 jsonpointer==1.0
-kombu==3.0.26
+kombu==3.0.30
 Markdown==2.6.5
 MarkupSafe==0.23
 meld3==1.0.2
