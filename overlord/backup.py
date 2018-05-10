@@ -34,36 +34,6 @@ def backup_mongo():
         return False
     return True
 
-
-@celery.task
-def backup_jira():
-    """
-    This task runs the Jira backup on our Jira server.
-    Then it commits the result to the "jira-db-backups"
-    repository on Github.
-    """
-    shell = spur.SshShell(
-        hostname=os.environ['TNYU_Jira_SERVER_IP'],
-        username=os.environ['TNYU_Jira_SERVER_USER'],
-        password=os.environ['TNYU_Jira_SERVER_PASSWORD'],
-        missing_host_key=spur.ssh.MissingHostKey.accept,
-    )
-    with shell:
-        atlassian_dir = "/var/atlassian/application-data/jira/export"
-        shell.run(["git", "add", "."],
-                  cwd=atlassian_dir,
-                  allow_error=True)
-        shell.run(["git", "commit", "-am", '"Adding Updates"'],
-                  cwd=atlassian_dir,
-                  allow_error=True)
-        result = shell.run(["git", "push", "-u", "origin", "master"],
-                           cwd=atlassian_dir,
-                           allow_error=True)
-    if result.return_code > 4:
-        return False
-    return True
-
-
 @celery.task
 def backup_discuss():
     """

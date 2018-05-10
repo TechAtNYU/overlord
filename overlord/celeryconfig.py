@@ -71,11 +71,6 @@ CELERYBEAT_SCHEDULE = {
         'schedule': crontab(minute='*/15'),
         'args': ('calendar-service', 'master'),
     },
-    'every-fourty-five-minutes-job-board': {
-        'task': 'static.trigger_build',
-        'schedule': crontab(minute='*/15'),
-        'args': ('job-board', 'v3'),
-    },
     'every-fourty-five-minutes-monitor-tnyu-site': {
         'task': 'server.monitor_techatnyu_org',
         'schedule': crontab(minute='*/45'),
